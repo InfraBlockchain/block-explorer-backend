@@ -119,3 +119,139 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
   }
 
 }
+
+/**
+  * Document sample in 'blocks' collection
+{
+   "_id":{
+      "$oid":"5b84b92c58c9e69f9415cfa2"
+   },
+   "block_num":489,
+   "block":{
+      "timestamp":"2018-08-28T02:53:32.000",
+      "producer":"producer.a",
+      "confirmed":0,
+      "previous":"000001e83ebea3dbbbaa1ca11d17111925aec902df6249a245d3a5fbb3394a7a",
+      "transaction_mroot":"9bdfa62757f21885ceff4c9aa3a7bb6e5472e6df4cfea4a00995aea830867886",
+      "action_mroot":"010d9bc25150629260d74e5720ec95c3067f6133e06394ca64dda2aaa653fb9c",
+      "schedule_version":1,
+      "new_producers":null,
+      "header_extensions":[
+
+      ],
+      "producer_signature":"YSG_K1_K1i2amxoABEUzY8qM4L8kx8sgA7ENPqMkQJh9RSfgt3ESnWcbbrohUQ2Mup8gkauY36FBaWfviJJw7v5yf4dNV61k4Aozc",
+      "transactions":[
+         {
+            "status":"executed",
+            "cpu_usage_us":10302,
+            "net_usage_words":18,
+            "trx":{
+               "id":"d718baea3e49f390dd781ed976ef037a93ac55e4f46bf9e51403445172fbd5ba",
+               "signatures":[
+                  "YSG_K1_Kfb2KDLZnV5X6YURjSDR5NucRyKdXmCTukGXSteCLtuLHPTMeM97Xroe2o8qF2rxX3PgZBxQieDZkFUk1tMqr5Lkw4jqYr"
+               ],
+               "compression":"none",
+               "packed_context_free_data":"",
+               "context_free_data":[
+
+               ],
+               "packed_trx":"49b9845ba8010d088fd400000000010000980ad23c41f7000000572d3ccdcd0130f2d414217315d600000000a8ed32322630f2d414217315d620f2d414217315d680f0fa020000000004444b5257000000056d656d6f3101e9030800c00257219de8ad",
+               "transaction":{
+                  "expiration":"2018-08-28T02:54:01",
+                  "ref_block_num":424,
+                  "ref_block_prefix":3566143501,
+                  "max_net_usage_words":0,
+                  "max_cpu_usage_ms":0,
+                  "delay_sec":0,
+                  "context_free_actions":[
+
+                  ],
+                  "actions":[
+                     {
+                        "account":"yx.ntoken",
+                        "name":"transfer",
+                        "authorization":[
+                           {
+                              "actor":"useraccount3",
+                              "permission":"active"
+                           }
+                        ],
+                        "data":{
+                           "from":"useraccount3",
+                           "to":"useraccount2",
+                           "amount":"5000.0000 DKRW",
+                           "memo":"memo1"
+                        },
+                        "hex_data":"30f2d414217315d620f2d414217315d680f0fa020000000004444b5257000000056d656d6f31"
+                     }
+                  ],
+                  "transaction_extensions":[
+                     [
+                        1001,
+                        "00c00257219de8ad"
+                     ]
+                  ]
+               }
+            }
+         },
+         {
+            "status":"executed",
+            "cpu_usage_us":10599,
+            "net_usage_words":18,
+            "trx":{
+               "id":"67fa12029be9b3aeb445c2374b1cf96ffba1d41f42bfe1eaa4e21b45923c520e",
+               "signatures":[
+                  "YSG_K1_KkwHRc2WFbbSEkhmeH8BUtKY26RP4KzCqT7xCzNe1qNQzXCr1KfvGGVaQ5hz3M2WeRdVQDgCZSycHjpQEd8BXvAR2ejJJ9"
+               ],
+               "compression":"none",
+               "packed_context_free_data":"",
+               "context_free_data":[
+
+               ],
+               "packed_trx":"49b9845ba8010d088fd400000000010000980ad23c41f7000000572d3ccdcd0130f2d414217315d600000000a8ed32322630f2d414217315d620f2d414217315d680f0fa020000000004444b5257000000056d656d6f3201e9030800000357219de8ad",
+               "transaction":{
+                  "expiration":"2018-08-28T02:54:01",
+                  "ref_block_num":424,
+                  "ref_block_prefix":3566143501,
+                  "max_net_usage_words":0,
+                  "max_cpu_usage_ms":0,
+                  "delay_sec":0,
+                  "context_free_actions":[
+
+                  ],
+                  "actions":[
+                     {
+                        "account":"yx.ntoken",
+                        "name":"transfer",
+                        "authorization":[
+                           {
+                              "actor":"useraccount3",
+                              "permission":"active"
+                           }
+                        ],
+                        "data":{
+                           "from":"useraccount3",
+                           "to":"useraccount2",
+                           "amount":"5000.0000 DKRW",
+                           "memo":"memo2"
+                        },
+                        "hex_data":"30f2d414217315d620f2d414217315d680f0fa020000000004444b5257000000056d656d6f32"
+                     }
+                  ],
+                  "transaction_extensions":[
+                     [
+                        1001,
+                        "00000357219de8ad"
+                     ]
+                  ]
+               }
+            }
+         }
+      ],
+      "block_extensions":[
+
+      ]
+   },
+   "irreversible":true
+}
+  */

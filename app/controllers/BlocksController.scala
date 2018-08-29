@@ -21,7 +21,7 @@ class BlocksController @Inject()(cc: ControllerComponents, blockRepo: BlockRepos
     response = classOf[Block],
     responseContainer = "List"
   )
-  def getBlocks(@ApiParam(value = "page number to fetch block list, first page = 1 (default : 1)") page: Int,
+  def getBlocks(@ApiParam(value = "page number to fetch recent block list, first page = 1 (default : 1)") page: Int,
                 @ApiParam(value = "the number of blocks in current page (default : 30)") size: Int) = Action.async {
     blockRepo.getBlocks(page, size).map { blocks =>
       Ok(Json.toJson(blocks))
