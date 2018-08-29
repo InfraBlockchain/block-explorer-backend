@@ -6,6 +6,12 @@
 GET       /blocks                     controllers.BlocksController.getBlocks(page: Int ?= 1, size: Int ?= 30)
 GET       /blocks/id/:id              controllers.BlocksController.getBlockById(id)
 GET       /blocks/:num                controllers.BlocksController.getBlockByBlockNum(num: Long)
+GET       /blocks/:id/transactions    controllers.TransactionsController.getTransactionsForBlock(id, page: Int ?= 1, size: Int ?= 30)
+
+# Transactions
+GET       /transactions               controllers.TransactionsController.getTransactions(page: Int ?= 1, size: Int ?= 30)
+GET       /transactions/:id           controllers.TransactionsController.getTransactionById(id)
+
 
 # Swagger docs
 GET       /                           controllers.ApiDocsController.redirectToDocs
