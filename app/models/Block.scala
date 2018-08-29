@@ -24,7 +24,7 @@ case class Block(id: String,
                  transactionMerkleRoot: String,
                  actionMerkleRoot: String,
                  version: Int,
-                 newProducers: JsValue,
+                 newProducers: Option[JsValue],
                  numTransactions: Int,
                  irreversible: Boolean)
 
@@ -83,19 +83,20 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
     val transactionMerkleRoot = (jsBlock \ "transaction_mroot").as[String]
     val actionMerkleRoot = (jsBlock \ "action_mroot").as[String]
     val version = (jsBlock \ "schedule_version").as[Int]
-    val newProducers = (jsBlock \ "new_producers").as[JsValue]
+    val newProducersOpt = (jsBlock \ "new_producers").asOpt[JsValue]
     val numTransactions = (jsBlock \ "transactions").asOpt[JsArray].getOrElse(JsArray()).value.size
     val irreversible = (jsDoc \ "irreversible").asOpt[Boolean].getOrElse(false)
 
     Block(blockId, blockNumber, timestamp, producer, confirmed, prevBlockId,
       transactionMerkleRoot, actionMerkleRoot,
-      version, newProducers, numTransactions, irreversible)
+      version, newProducersOpt, numTransactions, irreversible)
   }
 
   def getBlocks(page: Int, size: Int): Future[Seq[Block]] = {
     blocksCollection.flatMap(_.find(
       selector = Json.obj(/* Using Play JSON */),
       projection = Some(Json.obj("block_id" -> 1, "block_num" -> 1, "block" -> 1, "irreversible" -> 1)))
+      .sort(Json.obj("block_num" -> -1))
       .skip(size*(page-1))
       .cursor[JsObject](ReadPreference.primary)
       .collect[Seq](size, Cursor.FailOnError[Seq[JsObject]]())
