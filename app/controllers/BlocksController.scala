@@ -21,8 +21,9 @@ class BlocksController @Inject()(cc: ControllerComponents, blockRepo: BlockRepos
     response = classOf[Block],
     responseContainer = "List"
   )
-  def getBlocks = Action.async {
-    blockRepo.getBlocks(1, 30).map { blocks =>
+  def getBlocks(@ApiParam(value = "page number to fetch block list, first page = 1 (default : 1)") page: Int,
+                @ApiParam(value = "the number of blocks in current page (default : 30)") size: Int) = Action.async {
+    blockRepo.getBlocks(page, size).map { blocks =>
       Ok(Json.toJson(blocks))
     }
   }
@@ -44,6 +45,7 @@ class BlocksController @Inject()(cc: ControllerComponents, blockRepo: BlockRepos
     }
   }
 
+
   @ApiOperation(
     value = "Get a block data by block-number",
     response = classOf[Block]
@@ -52,8 +54,8 @@ class BlocksController @Inject()(cc: ControllerComponents, blockRepo: BlockRepos
     new ApiResponse(code = 404, message = "Block not found")
   )
   )
-  def getBlockByBlockNum(@ApiParam(value = "The block number of the Block to fetch") blockNumStr: String) = Action.async {
-    blockRepo.getBlockByBlockNum(blockNumStr.toLong).map { maybeBlock =>
+  def getBlockByBlockNum(@ApiParam(value = "The block number of the Block to fetch") blockNum: Long) = Action.async {
+    blockRepo.getBlockByBlockNum(blockNum).map { maybeBlock =>
       maybeBlock.map { block =>
         Ok(Json.toJson(block))
       }.getOrElse(NotFound)

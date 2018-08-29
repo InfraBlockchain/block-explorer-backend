@@ -3,9 +3,9 @@
 # ~~~~
 
 # Blocks
-GET       /blocks                     controllers.BlocksController.getBlocks
-GET       /blocks/:id                 controllers.BlocksController.getBlockById(id)
-GET       /blocks/num/:num            controllers.BlocksController.getBlockByBlockNum(num)
+GET       /blocks                     controllers.BlocksController.getBlocks(page: Int ?= 1, size: Int ?= 30)
+GET       /blocks/id/:id              controllers.BlocksController.getBlockById(id)
+GET       /blocks/:num                controllers.BlocksController.getBlockByBlockNum(num: Long)
 
 # Swagger docs
 GET       /                           controllers.ApiDocsController.redirectToDocs
