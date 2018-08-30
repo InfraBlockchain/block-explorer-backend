@@ -12,6 +12,9 @@ GET       /blocks/:id/transactions    controllers.TransactionsController.getTran
 GET       /transactions               controllers.TransactionsController.getTransactions(page: Int ?= 1, size: Int ?= 30)
 GET       /transactions/:id           controllers.TransactionsController.getTransactionById(id)
 
+# Actions
+GET       /actions/:id                controllers.ActionsController.getActionById(id)
+
 
 # Swagger docs
 GET       /                           controllers.ApiDocsController.redirectToDocs

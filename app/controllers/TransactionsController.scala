@@ -57,21 +57,5 @@ class TransactionsController @Inject()(cc: ControllerComponents, transactionRepo
       Ok(Json.toJson(transactions))
     }
   }
-//
-//  @ApiOperation(
-//    value = "Get a block data by block-number",
-//    response = classOf[Block]
-//  )
-//  @ApiResponses(Array(
-//    new ApiResponse(code = 404, message = "Block not found")
-//  )
-//  )
-//  def getBlockByBlockNum(@ApiParam(value = "The block number of the Block to fetch") blockNum: Long) = Action.async {
-//    blockRepo.getBlockByBlockNum(blockNum).map { maybeBlock =>
-//      maybeBlock.map { block =>
-//        Ok(Json.toJson(block))
-//      }.getOrElse(NotFound)
-//    }
-//  }
 
 }
