@@ -21,7 +21,7 @@ case class Transaction(id: String,
                        numActions: Int,
                        pending: Boolean,
                        createdAt: Long,
-                       blockId: String,
+                       blockId: Long,
                        updatedAt: Long)
 
 object TransactionJsonFormats{
@@ -52,9 +52,10 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
     val refBlockPrefix = (jsDoc \ "ref_block_prefix").as[Long]
     val numActions = (jsDoc \ "actions").asOpt[JsArray].getOrElse(JsArray()).value.size
     val pending = (jsDoc \ "scheduled").as[Boolean]
-    val createdAt = (jsDoc \ "createdAt" \ "$date").as[Long]
-    val blockId = (jsDoc \ "block_id").asOpt[String].getOrElse("")
-    val updatedAt = (jsDoc \ "updatedAt" \ "$date").asOpt[Long].getOrElse(0L)
+    val createdAt = (jsDoc \ "createdAt" \ "$date").as[Long] / 1000
+//    val blockId = (jsDoc \ "block_id").asOpt[String].getOrElse("")
+    val blockId = (jsDoc \ "block_num").as[Long]
+    val updatedAt = (jsDoc \ "updatedAt" \ "$date").asOpt[Long].getOrElse(0L) / 1000
 
     Transaction(trxId, expiration, refBlockPrefix, numActions, pending,
       createdAt, blockId, updatedAt)
@@ -66,12 +67,12 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
 //      projection = Option.empty[JsObject])
       projection = Some(Json.obj("trx_id" -> 1, "expiration" -> 1,
         "ref_block_prefix" -> 1, "actions" -> 1, "transaction_extensions" -> 1,
-        "scheduled" -> 1, "createdAt" -> 1, "block_id" -> 1, "updatedAt" -> 1)))
+        "scheduled" -> 1, "createdAt" -> 1, "block_num" -> 1, "updatedAt" -> 1)))
       .sort(Json.obj("block_id" -> -1))
       .skip(size*(page-1))
       .cursor[JsObject](ReadPreference.primary)
       .collect[Seq](size, Cursor.FailOnError[Seq[JsObject]]())
-      .map (_.map(_toTransaction(None, _)))
+      .map(_.map(_toTransaction(None, _)))
     )
   }
 
@@ -81,21 +82,21 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
 //      projection = Option.empty[JsObject])
       projection = Some(Json.obj("expiration" -> 1,
         "ref_block_prefix" -> 1, "actions" -> 1, "transaction_extensions" -> 1,
-        "scheduled" -> 1, "createdAt" -> 1, "block_id" -> 1, "updatedAt" -> 1)))
+        "scheduled" -> 1, "createdAt" -> 1, "block_num" -> 1, "updatedAt" -> 1)))
       .one[JsObject]).map(_.map(_toTransaction(Some(id), _)))
   }
 
-  def getTransactionsForBlock(blockId: String, page: Int, size: Int): Future[Seq[Transaction]] = {
+  def getTransactionsForBlock(blockNumber: Long, page: Int, size: Int): Future[Seq[Transaction]] = {
     transactionsCollection.flatMap(_.find(
-      selector = Json.obj("block_id" -> blockId),
+      selector = Json.obj("block_number" -> blockNumber),
 //      projection = Option.empty[JsObject])
       projection = Some(Json.obj("trx_id" -> 1, "expiration" -> 1,
         "ref_block_prefix" -> 1, "actions" -> 1, "transaction_extensions" -> 1,
-        "scheduled" -> 1, "createdAt" -> 1, "block_id" -> 1, "updatedAt" -> 1)))
+        "scheduled" -> 1, "createdAt" -> 1, "block_num" -> 1, "updatedAt" -> 1)))
       .skip(size*(page-1))
       .cursor[JsObject](ReadPreference.primary)
       .collect[Seq](size, Cursor.FailOnError[Seq[JsObject]]())
-      .map (_.map(_toTransaction(None, _)))
+      .map(_.map(_toTransaction(None, _)))
     )
   }
 

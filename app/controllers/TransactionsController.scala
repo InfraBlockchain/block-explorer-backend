@@ -50,10 +50,10 @@ class TransactionsController @Inject()(cc: ControllerComponents, transactionRepo
     response = classOf[Transaction],
     responseContainer = "List"
   )
-  def getTransactionsForBlock(@ApiParam(value = "The id of the Block to fetch") blockId: String,
+  def getTransactionsForBlock(@ApiParam(value = "The block number of the Block to fetch") blockNum: Long,
                               @ApiParam(value = "page number to fetch transaction list, first page = 1 (default : 1)") page: Int,
                               @ApiParam(value = "the number of transactions in current page (default : 30)") size: Int) = Action.async {
-    transactionRepo.getTransactionsForBlock(blockId, page, size).map { transactions =>
+    transactionRepo.getTransactionsForBlock(blockNum, page, size).map { transactions =>
       Ok(Json.toJson(transactions))
     }
   }
