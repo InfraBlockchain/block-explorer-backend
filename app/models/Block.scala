@@ -76,7 +76,7 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
     }
     val jsBlock = (jsDoc \ "block").as[JsValue]
     val tsStr = (jsBlock \ "timestamp").as[String]
-    val timestamp : Long = DateTime.parse(tsStr).toInstant.getMillis
+    val timestamp : Long = DateTime.parse(tsStr).toInstant.getMillis / 1000
     val producer = (jsBlock \ "producer").as[String]
     val confirmed = (jsBlock \ "confirmed").as[Long]
     val prevBlockId = (jsBlock \ "previous").as[String]
@@ -100,7 +100,7 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
       .skip(size*(page-1))
       .cursor[JsObject](ReadPreference.primary)
       .collect[Seq](size, Cursor.FailOnError[Seq[JsObject]]())
-      .map (_.map(_toBlock(None, None, _)))
+      .map(_.map(_toBlock(None, None, _)))
     )
   }
 
