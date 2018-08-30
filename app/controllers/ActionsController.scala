@@ -45,16 +45,37 @@ class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRe
     }
   }
 
-//  @ApiOperation(
-//    value = "Search all Transactions in a Block",
-//    response = classOf[Transaction],
-//    responseContainer = "List"
-//  )
-//  def getTransactionsForBlock(@ApiParam(value = "The id of the Block to fetch") blockId: String,
-//                              @ApiParam(value = "page number to fetch transaction list, first page = 1 (default : 1)") page: Int,
-//                              @ApiParam(value = "the number of transactions in current page (default : 30)") size: Int) = Action.async {
-//    transactionRepo.getTransactionsForBlock(blockId, page, size).map { transactions =>
-//      Ok(Json.toJson(transactions))
-//    }
-//  }
+
+  @ApiOperation(
+    value = "Get a action in a Transaction by transaction-id and action index",
+    response = classOf[Action]
+  )
+  @ApiResponses(Array(
+    new ApiResponse(code = 404, message = "Action not found")
+  )
+  )
+  def getActionInTransaction(@ApiParam(value = "The transaction-id of the Action to fetch") transactionId: String,
+                             @ApiParam(value = "The action index in transaction") idx: Int) = Action.async {
+    actionRepo.getActionInTransaction(transactionId, idx).map { maybeAction =>
+      maybeAction.map { action =>
+        Ok(Json.toJson(action))
+      }.getOrElse(NotFound)
+    }
+  }
+
+
+  @ApiOperation(
+    value = "Search all Transactions in a Block",
+    response = classOf[Action],
+    responseContainer = "List"
+  )
+  def getActionsInTransaction(@ApiParam(value = "The id of the Transaction to fetch actions") transactionId: String,
+                              @ApiParam(value = "page number to fetch action list, first page = 1 (default : 1)") page: Int,
+                              @ApiParam(value = "the number of actions in current page (default : 30)") size: Int) = Action.async {
+    actionRepo.getActionsInTransaction(transactionId, page, size).map { transactions =>
+      Ok(Json.toJson(transactions))
+    }
+  }
+
+
 }

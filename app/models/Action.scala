@@ -36,17 +36,20 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
 
   def actionTracesCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("action_traces"))
 
-  def _toAction(actionIdOpt: Option[String], doc: JsObject): Action = {
-    Logger.warn(doc.toString())
+  def _toAction(actionIdOpt: Option[String], transactionIdOpt: Option[String],  doc: JsObject): Action = {
+//    Logger.warn(doc.toString())
 
     val jsDoc = Json.toJson(doc)
 
     val actionId: String = actionIdOpt match {
-      case Some(tid) => tid
+      case Some(aid) => aid
       case _ => (jsDoc \ "_id" \ "$oid").as[String]
     }
 
-    val transaction = (jsDoc \ "trx_id").as[String]
+    val transaction: String = transactionIdOpt match {
+      case Some(tid) => tid
+      case _ => (jsDoc \ "trx_id").as[String]
+    }
 
     val jsAct = (jsDoc \ "act").as[JsValue]
     val account = (jsAct \ "account").as[String]
@@ -66,9 +69,38 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
       selector = Json.obj("_id" -> Json.obj("$oid" -> id)),
 //      projection = Option.empty[JsObject])
       projection = Some(Json.obj("receipt" -> 1, "act" -> 1, "trx_id" -> 1)))
-      .one[JsObject]).map(_.map(_toAction(Some(id), _)))
+      .one[JsObject]).map(_.map(_toAction(Some(id), None, _)))
   }
 
+  def getActionInTransaction(transactionId: String, idx: Int): Future[Option[Action]] = {
+    actionTracesCollection.flatMap(_.find(
+      selector = Json.obj("trx_id" -> transactionId),
+//      projection = Option.empty[JsObject])
+      projection = Some(Json.obj("_id" -> 1, "receipt" -> 1, "act" -> 1)))
+      .skip(idx)
+      .cursor[JsObject](ReadPreference.primary)
+      .collect[Seq](1, Cursor.FailOnError[Seq[JsObject]]())
+      .map(_.map(_toAction(None, Some(transactionId), _))).map { actSeq =>
+        if (actSeq.size > 0) {
+          Some(actSeq(0))
+        } else {
+          None
+        }
+      }
+    )
+  }
+
+  def getActionsInTransaction(transactionId: String, page: Int, size: Int): Future[Seq[Action]] = {
+    actionTracesCollection.flatMap(_.find(
+      selector = Json.obj("trx_id" -> transactionId),
+      //      projection = Option.empty[JsObject])
+      projection = Some(Json.obj("_id" -> 1, "receipt" -> 1, "act" -> 1)))
+      .skip(size*(page-1))
+      .cursor[JsObject](ReadPreference.primary)
+      .collect[Seq](size, Cursor.FailOnError[Seq[JsObject]]())
+      .map(_.map(_toAction(None, Some(transactionId), _)))
+    )
+  }
 }
 
 /**
