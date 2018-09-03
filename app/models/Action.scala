@@ -106,18 +106,20 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
 /**
   * Document sample in 'action_traces' collection
 {
-   "_id":{
-      "$oid":"5b84b92bda9497215b208fac"
-   },
+   "_id":ObjectId("5b8d064dd76fe49a9a2f940c"),
    "receipt":{
       "receiver":"yx.ntoken",
-      "act_digest":"50cf385834699415c233f608b6a7be0e3254767189144b26142bbb641aa52ab7",
-      "global_sequence":644,
-      "recv_sequence":20,
+      "act_digest":"cefd67ce9fbe5d07628c1f8e10f041f0984a77eaf1e406794bf9512a1ed3beac",
+      "global_sequence":645,
+      "recv_sequence":21,
       "auth_sequence":[
          [
             "useraccount3",
-            5
+            6
+         ],
+         [
+            "yosemite",
+            595
          ]
       ],
       "code_sequence":1,
@@ -125,28 +127,34 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
    },
    "act":{
       "account":"yx.ntoken",
-      "name":"transfer",
+      "name":"ntransfer",
       "authorization":[
          {
             "actor":"useraccount3",
+            "permission":"active"
+         },
+         {
+            "actor":"yosemite",
             "permission":"active"
          }
       ],
       "data":{
          "from":"useraccount3",
          "to":"useraccount2",
-         "amount":"5000.0000 DKRW",
+         "token":{
+            "amount":"5000.0000 DKRW",
+            "issuer":"sysdepo1"
+         },
          "memo":"memo1"
       },
-      "hex_data":"30f2d414217315d620f2d414217315d680f0fa020000000004444b5257000000056d656d6f31"
+      "hex_data":"30f2d414217315d620f2d414217315d680f0fa020000000004444b5257000000000000815695b0c7056d656d6f31"
    },
-   "elapsed":4147,
+   "elapsed":2203,
    "cpu_usage":0,
    "console":"",
    "total_cpu_usage":0,
-   "trx_id":"d718baea3e49f390dd781ed976ef037a93ac55e4f46bf9e51403445172fbd5ba",
-   "createdAt":{
-      "$date":1535424811942
-   }
+   "trx_id":"5c6699dd6c2ab4a258daa41cf885f22a93bc7b17c6c4623e342c701d93fb6a75",
+   "bNum":488,
+   "bTime":   ISODate("2018-09-03T10:00:46   Z")
 }
   */
