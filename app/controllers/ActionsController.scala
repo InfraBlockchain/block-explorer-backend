@@ -71,7 +71,7 @@ class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRe
   )
   def getActionsInTransaction(@ApiParam(value = "The id of the Transaction to fetch actions") transactionId: String,
                               @ApiParam(value = "page number to fetch action list, first page = 1 (default : 1)") page: Int,
-                              @ApiParam(value = "the number of actions in current page (default : 30)") size: Int) = Action.async {
+                              @ApiParam(value = "the number of actions in current page (default : 100)") size: Int) = Action.async {
     actionRepo.getActionsInTransaction(transactionId, page, size).map { transactions =>
       Ok(Json.toJson(transactions))
     }

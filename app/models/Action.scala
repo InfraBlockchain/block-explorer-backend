@@ -90,15 +90,14 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
     )
   }
 
-  def getActionsInTransaction(transactionId: String, page: Int, size: Int): Future[Seq[Action]] = {
+  def getActionsInTransaction(transactionId: String, page: Int, size: Int): Future[Seq[JsObject]] = {
     actionTracesCollection.flatMap(_.find(
       selector = Json.obj("trx_id" -> transactionId),
-      //      projection = Option.empty[JsObject])
-      projection = Some(Json.obj("_id" -> 1, "receipt" -> 1, "act" -> 1)))
+      projection = Option.empty[JsObject])
       .skip(size*(page-1))
       .cursor[JsObject](ReadPreference.primary)
       .collect[Seq](size, Cursor.FailOnError[Seq[JsObject]]())
-      .map(_.map(_toAction(None, Some(transactionId), _)))
+      .map(_.map( _ - "_id"))
     )
   }
 }

@@ -15,7 +15,7 @@ GET       /transactions/:id           controllers.TransactionsController.getTran
 # Actions
 GET       /actions/:id                controllers.ActionsController.getActionById(id)
 GET       /transactions/:txid/actions/:idx    controllers.ActionsController.getActionInTransaction(txid, idx: Int)
-GET       /transactions/:txid/actions controllers.ActionsController.getActionsInTransaction(txid, page: Int ?= 1, size: Int ?= 30)
+GET       /transactions/:txid/actions controllers.ActionsController.getActionsInTransaction(txid, page: Int ?= 1, size: Int ?= 100)
 
 
 # Swagger docs
