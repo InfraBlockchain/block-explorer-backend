@@ -55,7 +55,7 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
     }
     val jsBlock = (jsDoc \ "block").as[JsValue]
     val tsStr = (jsBlock \ "timestamp").as[String]
-    val timestamp : Long = DateTime.parse(tsStr).toInstant.getMillis / 1000
+    val timestamp : Long = DateTime.parse(tsStr + "Z").toInstant.getMillis
     val producer = (jsBlock \ "producer").as[String]
     val confirmed = (jsBlock \ "confirmed").as[Long]
     val prevBlockId = (jsBlock \ "previous").as[String]

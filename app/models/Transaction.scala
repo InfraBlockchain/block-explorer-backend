@@ -39,7 +39,7 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
   def transactionTracesCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("transaction_traces"))
 
   def _toTransaction(trxIdOpt: Option[String], doc: JsObject): Transaction = {
-    Logger.warn(doc.toString())
+//    Logger.warn(doc.toString())
 
     val jsDoc = Json.toJson(doc)
 
@@ -49,19 +49,26 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
     }
 
     val expirationStr = (jsDoc \ "expiration").as[String]
-    val expiration : Long = DateTime.parse(expirationStr).toInstant.getMillis / 1000
+    val expiration : Long = DateTime.parse(expirationStr + "Z").toInstant.getMillis
     val refBlockPrefix = (jsDoc \ "ref_block_prefix").as[Long]
     val numActions = (jsDoc \ "actions").asOpt[JsArray].getOrElse(JsArray()).value.size
     val pending = (jsDoc \ "scheduled").as[Boolean]
 //    val blockId = (jsDoc \ "block_id").asOpt[String].getOrElse("")
     val blockId = (jsDoc \ "bNum").asOpt[Long].getOrElse(0L)
 
-    val docId: String = (jsDoc \ "_id" \ "$oid").as[String]
-    val createdAt = BSONObjectID.parse(docId).get.timeSecond
 //    val createdAt = (jsDoc \ "createdAt" \ "$date").as[Long] / 1000
 
+    var createdAt: Long = 0L
+    val blockTimeOpt = (jsDoc \ "bTime").asOpt[JsValue].map{ jsVal => (jsVal \ "$date").asOpt[Long].getOrElse(0L) }
+    if (blockTimeOpt.isDefined) {
+      createdAt = blockTimeOpt.get
+    } else {
+      val docId: String = (jsDoc \ "_id" \ "$oid").as[String]
+      createdAt = BSONObjectID.parse(docId).get.time
+    }
+
     val irreversibleAtOpt = (jsDoc \ "irrAt").asOpt[JsValue].map{ jsVal => (jsVal \ "$date").asOpt[Long].getOrElse(0L) }
-    val updatedAt = irreversibleAtOpt.getOrElse(0L) / 1000
+    val updatedAt = irreversibleAtOpt.getOrElse(0L)
 
     Transaction(trxId, expiration, refBlockPrefix, numActions, pending,
       createdAt, blockId, updatedAt)
