@@ -35,8 +35,8 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
 
   import TransactionJsonFormats._
 
-//  def transactionTracesCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("transaction_traces"))
   def transactionsCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("transactions"))
+  def transactionTracesCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("transaction_traces"))
 
   def _toTransaction(trxIdOpt: Option[String], doc: JsObject): Transaction = {
     Logger.warn(doc.toString())
@@ -49,7 +49,7 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
     }
 
     val expirationStr = (jsDoc \ "expiration").as[String]
-    val expiration : Long = DateTime.parse(expirationStr).toInstant.getMillis
+    val expiration : Long = DateTime.parse(expirationStr).toInstant.getMillis / 1000
     val refBlockPrefix = (jsDoc \ "ref_block_prefix").as[Long]
     val numActions = (jsDoc \ "actions").asOpt[JsArray].getOrElse(JsArray()).value.size
     val pending = (jsDoc \ "scheduled").as[Boolean]
@@ -82,14 +82,24 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
     )
   }
 
-  def getTransactionById(id: String): Future[Option[Transaction]] = {
-    transactionsCollection.flatMap(_.find(
-      selector = Json.obj("trx_id" -> id),
-//      projection = Option.empty[JsObject])
-      projection = Some(Json.obj("_id" -> 1, "expiration" -> 1,
-        "ref_block_prefix" -> 1, "actions" -> 1, "transaction_extensions" -> 1,
-        "scheduled" -> 1, "bNum" -> 1)))
-      .one[JsObject]).map(_.map(_toTransaction(Some(id), _)))
+  def getTransactionById(id: String): Future[Option[JsObject]] = {
+    for (
+      transactionOpt <- transactionsCollection.flatMap(_.find(
+        selector = Json.obj("trx_id" -> id),
+        projection = Option.empty[JsObject])
+        .one[JsObject]);
+      transactionTraceOpt <- transactionTracesCollection.flatMap(_.find(
+        selector = Json.obj("id" -> id),
+        projection = Option.empty[JsObject])
+        .one[JsObject])
+    ) yield {
+      if (transactionOpt.isDefined && transactionTraceOpt.isDefined) {
+         val trxJs = transactionOpt.get.deepMerge(transactionTraceOpt.get) - "_id" - "id"
+        Some(trxJs)
+      } else {
+        None
+      }
+    }
   }
 
   def getTransactionsForBlock(blockNumber: Long, page: Int, size: Int): Future[Seq[Transaction]] = {

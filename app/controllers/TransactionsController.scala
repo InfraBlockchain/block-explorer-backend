@@ -39,8 +39,8 @@ class TransactionsController @Inject()(cc: ControllerComponents, transactionRepo
   )
   def getTransactionById(@ApiParam(value = "The id of the Transaction to fetch") transactionId: String) = Action.async {
     transactionRepo.getTransactionById(transactionId).map { maybeTx =>
-      maybeTx.map { tx =>
-        Ok(Json.toJson(tx))
+      maybeTx.map { txJs =>
+        Ok(txJs)
       }.getOrElse(NotFound)
     }
   }
