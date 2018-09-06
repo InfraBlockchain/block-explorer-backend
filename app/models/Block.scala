@@ -26,6 +26,7 @@ case class Block(id: String,
                  version: Int,
                  newProducers: Option[JsValue],
                  numTransactions: Int,
+                 trxVotes: Long,
                  irreversible: Boolean)
 
 object BlockJsonFormats{
@@ -39,28 +40,6 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
   import BlockJsonFormats._
 
   def blocksCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("blocks"))
-
-//  def bsonToBlock(doc: BSONDocument): Block = {
-//    Logger.warn(Json.toJson(doc).toString())
-//    val blockId = doc.getAs[BSONString]("block_id").get.value
-//    Logger.error(blockId)
-//    val blockNumber = doc.getAs[BSONInteger]("block_num").get.value
-//    val block = doc.getAs[BSONDocument]("block").get
-//    val timestamp : Long = 0L
-//    val producer = block.getAs[BSONString]("producer").get.value
-//    val confirmed = block.getAs[BSONInteger]("confirmed").get.value
-//    val prevBlockId = block.getAs[BSONString]("previous").get.value
-//    val transactionMerkleRoot = block.getAs[BSONString]("transaction_mroot").get.value
-//    val actionMerkleRoot = block.getAs[BSONString]("action_mroot").get.value
-//    val version = block.getAs[BSONInteger]("schedule_version").get.value
-//    val newProducers = JsNull
-//    val numTransactions = block.getAs[BSONArray]("transactions").get.size
-//    val irreversible = doc.getAs[BSONBoolean]("irreversible").getOrElse(BSONBoolean(false)).value
-//
-//    Block(blockId, blockNumber, timestamp, producer, confirmed, prevBlockId,
-//      transactionMerkleRoot, actionMerkleRoot,
-//      version, newProducers, numTransactions, irreversible)
-//  }
 
   def _toBlock(blockIdOpt: Option[String], blockNumOpt: Option[Long], doc: JsObject): Block = {
 //    Logger.warn(doc.toString())
@@ -86,17 +65,26 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
     val newProducersOpt = (jsBlock \ "new_producers").asOpt[JsValue]
     val numTransactions = (jsBlock \ "transactions").asOpt[JsArray].getOrElse(JsArray()).value.size
 
+    var trxVotes : Long = 0L
+    val trxVotesOpt = (jsDoc \ "trx_votes").asOpt[JsArray]
+    if (trxVotesOpt.isDefined && trxVotesOpt.get.value.size > 0) {
+      trxVotesOpt.get.value.foreach{ trxVoteJs =>
+        val trxVoteItems = trxVoteJs.as[JsArray].value
+        trxVotes += trxVoteItems(1).as[Long]
+      }
+    }
+
     val irreversibleAtOpt = (jsDoc \ "irrAt").asOpt[JsValue].map{ jsVal => (jsVal \ "$date").asOpt[Long].getOrElse(0L) }
 
     Block(blockId, blockNumber, timestamp, producer, confirmed, prevBlockId,
       transactionMerkleRoot, actionMerkleRoot,
-      version, newProducersOpt, numTransactions, (irreversibleAtOpt.getOrElse(0L) > 0L))
+      version, newProducersOpt, numTransactions, trxVotes, (irreversibleAtOpt.getOrElse(0L) > 0L))
   }
 
   def getBlocks(page: Int, size: Int): Future[Seq[Block]] = {
     blocksCollection.flatMap(_.find(
       selector = Json.obj(/* Using Play JSON */),
-      projection = Some(Json.obj("block_id" -> 1, "block_num" -> 1, "block" -> 1, "irrAt" -> 1)))
+      projection = Some(Json.obj("block_id" -> 1, "block_num" -> 1, "block" -> 1, "trx_votes" -> 1, "irrAt" -> 1)))
       .sort(Json.obj("block_num" -> -1))
       .skip(size*(page-1))
       .cursor[JsObject](ReadPreference.primary)
