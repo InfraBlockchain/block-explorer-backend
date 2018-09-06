@@ -39,8 +39,8 @@ class BlocksController @Inject()(cc: ControllerComponents, blockRepo: BlockRepos
   )
   def getBlockById(@ApiParam(value = "The id of the Block to fetch") blockId: String) = Action.async {
     blockRepo.getBlockById(blockId).map { maybeBlock =>
-      maybeBlock.map { block =>
-        Ok(Json.toJson(block))
+      maybeBlock.map { blockRawJs =>
+        Ok(blockRawJs)
       }.getOrElse(NotFound)
     }
   }
@@ -56,8 +56,8 @@ class BlocksController @Inject()(cc: ControllerComponents, blockRepo: BlockRepos
   )
   def getBlockByBlockNum(@ApiParam(value = "The block number of the Block to fetch") blockNum: Long) = Action.async {
     blockRepo.getBlockByBlockNum(blockNum).map { maybeBlock =>
-      maybeBlock.map { block =>
-        Ok(Json.toJson(block))
+      maybeBlock.map { blockRawJs =>
+        Ok(blockRawJs)
       }.getOrElse(NotFound)
     }
   }

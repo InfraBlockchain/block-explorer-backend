@@ -93,18 +93,36 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
     )
   }
 
-  def getBlockById(id: String): Future[Option[Block]] = {
+//  def getBlockById(id: String): Future[Option[Block]] = {
+//    blocksCollection.flatMap(_.find(
+//      selector = Json.obj("block_id" -> id),
+//      projection = Some(Json.obj("block_num" -> 1, "block" -> 1, "irrAt" -> 1)))
+//      .one[JsObject]).map(_.map(_toBlock(Some(id), None, _)))
+//  }
+
+  // provide raw block data
+  def getBlockById(id: String): Future[Option[JsObject]] = {
     blocksCollection.flatMap(_.find(
       selector = Json.obj("block_id" -> id),
-      projection = Some(Json.obj("block_num" -> 1, "block" -> 1, "irrAt" -> 1)))
-      .one[JsObject]).map(_.map(_toBlock(Some(id), None, _)))
+      projection = Option.empty[JsObject])
+      .one[JsObject])
+      .map( _.map( _ - "_id") )
   }
 
-  def getBlockByBlockNum(blockNum: Long): Future[Option[Block]] = {
+//  def getBlockByBlockNum(blockNum: Long): Future[Option[Block]] = {
+//    blocksCollection.flatMap(_.find(
+//      selector = Json.obj("block_num" -> blockNum),
+//      projection = Some(Json.obj("block_id" -> 1, "block" -> 1, "irrAt" -> 1)))
+//      .one[JsObject]).map(_.map(_toBlock(None, Some(blockNum), _)))
+//  }
+
+  // provide raw block data
+  def getBlockByBlockNum(blockNum: Long): Future[Option[JsObject]] = {
     blocksCollection.flatMap(_.find(
       selector = Json.obj("block_num" -> blockNum),
-      projection = Some(Json.obj("block_id" -> 1, "block" -> 1, "irrAt" -> 1)))
-      .one[JsObject]).map(_.map(_toBlock(None, Some(blockNum), _)))
+      projection = Option.empty[JsObject])
+      .one[JsObject])
+      .map( _.map( _ - "_id") )
   }
 
 }
