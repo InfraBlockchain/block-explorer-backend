@@ -57,25 +57,38 @@ class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRe
   def getActionInTransaction(@ApiParam(value = "The transaction-id of the Action to fetch") transactionId: String,
                              @ApiParam(value = "The action index in transaction") idx: Int) = Action.async {
     actionRepo.getActionInTransaction(transactionId, idx).map { maybeAction =>
-      maybeAction.map { action =>
-        Ok(Json.toJson(action))
+      maybeAction.map { actionJs =>
+        Ok(actionJs)
       }.getOrElse(NotFound)
     }
   }
 
 
   @ApiOperation(
-    value = "Search all Transactions in a Block",
+    value = "Search all Actions in a Block",
     response = classOf[Action],
     responseContainer = "List"
   )
   def getActionsInTransaction(@ApiParam(value = "The id of the Transaction to fetch actions") transactionId: String,
                               @ApiParam(value = "page number to fetch action list, first page = 1 (default : 1)") page: Int,
                               @ApiParam(value = "the number of actions in current page (default : 100)") size: Int) = Action.async {
-    actionRepo.getActionsInTransaction(transactionId, page, size).map { transactions =>
-      Ok(Json.toJson(transactions))
+    actionRepo.getActionsInTransaction(transactionId, page, size).map { actions =>
+      Ok(Json.toJson(actions))
     }
   }
 
+
+  @ApiOperation(
+    value = "Search all Actions received by an account",
+    response = classOf[Action],
+    responseContainer = "List"
+  )
+  def getActionsByReceiverAccount(@ApiParam(value = "The action receiver account name to fetch actions") account: String,
+                                  @ApiParam(value = "action receiver sequence number to start fetching actions (exclusive for reverse search, inclusive for forward search) (default : -1 : next sequence number of the last(recent) actions)") start: Long,
+                                  @ApiParam(value = "offset to the end sequence number to fetch actions (default : -50)") offset: Int) = Action.async {
+    actionRepo.getActionsByReceiverAccount(account, start, offset).map { actions =>
+      Ok(Json.toJson(actions))
+    }
+  }
 
 }

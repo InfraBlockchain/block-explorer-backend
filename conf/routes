@@ -3,25 +3,27 @@
 # ~~~~
 
 # Blocks
-GET       /blocks                     controllers.BlocksController.getBlocks(page: Int ?= 1, size: Int ?= 30)
-GET       /blocks/id/:id              controllers.BlocksController.getBlockById(id)
-GET       /blocks/:num                controllers.BlocksController.getBlockByBlockNum(num: Long)
-GET       /blocks/:blockNum/transactions    controllers.TransactionsController.getTransactionsForBlock(blockNum: Long, page: Int ?= 1, size: Int ?= 30)
+GET       /blocks                            controllers.BlocksController.getBlocks(page: Int ?= 1, size: Int ?= 30)
+GET       /blocks/id/:id                     controllers.BlocksController.getBlockById(id)
+GET       /blocks/:num                       controllers.BlocksController.getBlockByBlockNum(num: Long)
+GET       /blocks/:blockNum/transactions     controllers.TransactionsController.getTransactionsForBlock(blockNum: Long, page: Int ?= 1, size: Int ?= 30)
 
 # Transactions
-GET       /transactions               controllers.TransactionsController.getTransactions(page: Int ?= 1, size: Int ?= 30)
-GET       /transactions/:id           controllers.TransactionsController.getTransactionById(id)
+GET       /transactions                      controllers.TransactionsController.getTransactions(page: Int ?= 1, size: Int ?= 30)
+GET       /transactions/:id                  controllers.TransactionsController.getTransactionById(id)
 
 # Actions
-GET       /actions/:id                controllers.ActionsController.getActionById(id)
-GET       /transactions/:txid/actions/:idx    controllers.ActionsController.getActionInTransaction(txid, idx: Int)
-GET       /transactions/:txid/actions controllers.ActionsController.getActionsInTransaction(txid, page: Int ?= 1, size: Int ?= 100)
+GET       /actions/:id                       controllers.ActionsController.getActionById(id)
+GET       /transactions/:txid/actions/:idx   controllers.ActionsController.getActionInTransaction(txid, idx: Int)
+GET       /transactions/:txid/actions        controllers.ActionsController.getActionsInTransaction(txid, page: Int ?= 1, size: Int ?= 100)
+GET       /actions/:id                       controllers.ActionsController.getActionById(id)
+GET       /actions/account/:name             controllers.ActionsController.getActionsByReceiverAccount(name, start: Long ?= -1, offset: Int ?= -50)
 
 
 # Swagger docs
-GET       /                           controllers.ApiDocsController.redirectToDocs
-GET       /swagger.json               controllers.ApiHelpController.getResources
-GET       /api-docs                   controllers.ApiDocsController.redirectToDocs
+GET       /                                  controllers.ApiDocsController.redirectToDocs
+GET       /swagger.json                      controllers.ApiHelpController.getResources
+GET       /api-docs                          controllers.ApiDocsController.redirectToDocs
 
 # Map static resources from the /public folder to the /assets URL path
-GET       /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET       /assets/*file                      controllers.Assets.versioned(path="/public", file: Asset)
