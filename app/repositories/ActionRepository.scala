@@ -1,6 +1,7 @@
 package repositories
 
 import javax.inject.Inject
+import models.Action
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.{Cursor, ReadPreference}
@@ -12,25 +13,9 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Created by bezalel on 29/08/2018.
   */
-
-case class Action(id: String,
-                  transaction: String,
-                  account: String,
-                  name: String,
-                  data: JsValue,
-                  authorization: JsValue,
-                  seq: Long,
-                  parent: Long)
-
-object ActionJsonFormats{
-  import play.api.libs.json._
-
-  implicit val actionFormat: OFormat[Action] = Json.format[Action]
-}
-
 class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi: ReactiveMongoApi){
 
-  import ActionJsonFormats._
+  import models.ActionJsonFormats._
 
   def actionTracesCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("action_traces"))
 
@@ -70,6 +55,7 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
       .one[JsObject]).map(_.map(_toAction(Some(id), None, _)))
   }
 
+  // provides action blockchain raw data
   def getActionInTransaction(transactionId: String, idx: Int): Future[Option[JsObject]] = {
     actionTracesCollection.flatMap(_.find(
       selector = Json.obj("trx_id" -> transactionId),
@@ -87,6 +73,7 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
     )
   }
 
+  // provides action blockchain raw data
   def getActionsInTransaction(transactionId: String, page: Int, size: Int): Future[Seq[JsObject]] = {
     actionTracesCollection.flatMap(_.find(
       selector = Json.obj("trx_id" -> transactionId),
@@ -98,6 +85,7 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
     )
   }
 
+  // provides action blockchain raw data
   def getActionsByReceiverAccount(receiverAccount: String, start_seq: Long, offset: Int): Future[Seq[JsObject]] = {
     if (start_seq == -1L) {
       if (offset < 0) {
