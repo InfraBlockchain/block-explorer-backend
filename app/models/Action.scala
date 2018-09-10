@@ -22,7 +22,7 @@ case class Action(id: String,
                   data: JsValue,
                   authorization: JsValue,
                   seq: Long,
-                  parentId: String)
+                  parent: Long)
 
 object ActionJsonFormats{
   import play.api.libs.json._
@@ -59,9 +59,9 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
 
     val jsReceipt = (jsDoc \ "receipt").as[JsValue]
     val seq = (jsReceipt \ "global_sequence").as[Long]
-    val parentId = ""
+    val parent = (jsDoc \ "parent").asOpt[Long].getOrElse(0L)
 
-    Action(actionId, transaction, account, name, authorization, data, seq, parentId)
+    Action(actionId, transaction, account, name, authorization, data, seq, parent)
   }
 
   def getActionById(id: String): Future[Option[Action]] = {
@@ -72,15 +72,14 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
       .one[JsObject]).map(_.map(_toAction(Some(id), None, _)))
   }
 
-  def getActionInTransaction(transactionId: String, idx: Int): Future[Option[Action]] = {
+  def getActionInTransaction(transactionId: String, idx: Int): Future[Option[JsObject]] = {
     actionTracesCollection.flatMap(_.find(
       selector = Json.obj("trx_id" -> transactionId),
-//      projection = Option.empty[JsObject])
-      projection = Some(Json.obj("_id" -> 1, "receipt" -> 1, "act" -> 1)))
+      projection = Option.empty[JsObject])
       .skip(idx)
       .cursor[JsObject](ReadPreference.primary)
       .collect[Seq](1, Cursor.FailOnError[Seq[JsObject]]())
-      .map(_.map(_toAction(None, Some(transactionId), _))).map { actSeq =>
+      .map(_.map( _ - "_id" )).map { actSeq =>
         if (actSeq.size > 0) {
           Some(actSeq(0))
         } else {
@@ -100,16 +99,58 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
       .map(_.map( _ - "_id"))
     )
   }
+
+  def getActionsByReceiverAccount(receiverAccount: String, start_seq: Long, offset: Int): Future[Seq[JsObject]] = {
+    if (start_seq == -1L) {
+      if (offset < 0) {
+        actionTracesCollection.flatMap(_.find(
+          selector = Json.obj("receipt.receiver" -> receiverAccount),
+          projection = Option.empty[JsObject])
+          .sort(Json.obj("receipt.recv_sequence" -> -1))
+          .cursor[JsObject](ReadPreference.primary)
+          .collect[Seq](-offset, Cursor.FailOnError[Seq[JsObject]]())
+          .map(_.map( _ - "_id"))
+        )
+      } else {
+        Future.successful(Seq())
+      }
+    } else {
+      if (offset < 0) {
+        actionTracesCollection.flatMap(_.find(
+          selector = Json.obj("receipt.receiver" -> receiverAccount,
+            "receipt.recv_sequence" -> Json.obj("$lt" -> start_seq)),
+          projection = Option.empty[JsObject])
+          .sort(Json.obj("receipt.recv_sequence" -> -1))
+          .cursor[JsObject](ReadPreference.primary)
+          .collect[Seq](-offset, Cursor.FailOnError[Seq[JsObject]]())
+          .map(_.map( _ - "_id"))
+        )
+      } else if (offset > 0) {
+        actionTracesCollection.flatMap(_.find(
+          selector = Json.obj("receipt.receiver" -> receiverAccount,
+            "receipt.recv_sequence" -> Json.obj("$gte" -> start_seq)),
+          projection = Option.empty[JsObject])
+          .sort(Json.obj("receipt.recv_sequence" -> 1))
+          .cursor[JsObject](ReadPreference.primary)
+          .collect[Seq](offset, Cursor.FailOnError[Seq[JsObject]]())
+          .map(_.map( _ - "_id"))
+        )
+      } else {
+        Future.successful(Seq())
+      }
+    }
+  }
+
 }
 
 /**
   * Document sample in 'action_traces' collection
 {
-   "_id":ObjectId("5b8d064dd76fe49a9a2f940c"),
+   "_id":ObjectId("5b9354812b60c60ac507b9e0"),
    "receipt":{
       "receiver":"yx.ntoken",
       "act_digest":"cefd67ce9fbe5d07628c1f8e10f041f0984a77eaf1e406794bf9512a1ed3beac",
-      "global_sequence":645,
+      "global_sequence":649,
       "recv_sequence":21,
       "auth_sequence":[
          [
@@ -118,7 +159,7 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
          ],
          [
             "yosemite",
-            595
+            599
          ]
       ],
       "code_sequence":1,
@@ -148,12 +189,13 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
       },
       "hex_data":"30f2d414217315d620f2d414217315d680f0fa020000000004444b5257000000000000815695b0c7056d656d6f31"
    },
-   "elapsed":2203,
+   "elapsed":2803,
    "cpu_usage":0,
    "console":"",
    "total_cpu_usage":0,
-   "trx_id":"5c6699dd6c2ab4a258daa41cf885f22a93bc7b17c6c4623e342c701d93fb6a75",
-   "bNum":488,
-   "bTime":   ISODate("2018-09-03T10:00:46   Z")
+   "trx_id":"a1481e23f00a7bdb37cb57ac0f78419b7d5baa0027ce21cd961906bf4425a390",
+   "bNum":492,
+   "bTime":   ISODate("2018-09-08T04:48:02   Z"),
+   "parent":NumberLong(648)
 }
   */
