@@ -1,16 +1,15 @@
-package models
+package repositories
 
 import javax.inject.Inject
 import org.joda.time.DateTime
-import play.api.Logger
-
-import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.json._
+import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.{Cursor, ReadPreference}
+import reactivemongo.bson.BSONObjectID
 import reactivemongo.play.json._
 import reactivemongo.play.json.collection.JSONCollection
-import play.modules.reactivemongo.ReactiveMongoApi
-import reactivemongo.bson.BSONObjectID
+
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
   * Created by bezalel on 29/08/2018.

@@ -2,8 +2,8 @@ package controllers
 
 import javax.inject.Inject
 import io.swagger.annotations._
-import models.BlockJsonFormats._
-import models.{Block, BlockRepository}
+import repositories.BlockJsonFormats._
+import repositories.{Block, BlockRepository}
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
 

@@ -2,10 +2,10 @@ package controllers
 
 import javax.inject.Inject
 import io.swagger.annotations._
-import models.ActionJsonFormats._
-import models.{Action, ActionRepository}
+import repositories.ActionJsonFormats._
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
+import repositories.{Action, ActionRepository}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

@@ -1,4 +1,4 @@
-package models
+package repositories
 
 import javax.inject.Inject
 import org.joda.time.DateTime
