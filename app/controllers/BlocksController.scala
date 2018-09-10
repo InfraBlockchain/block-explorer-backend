@@ -2,8 +2,9 @@ package controllers
 
 import javax.inject.Inject
 import io.swagger.annotations._
-import repositories.BlockJsonFormats._
-import repositories.{Block, BlockRepository}
+import models.{Block, BlockRaw}
+import models.BlockJsonFormats._
+import repositories.BlockRepository
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
 
@@ -31,7 +32,7 @@ class BlocksController @Inject()(cc: ControllerComponents, blockRepo: BlockRepos
 
   @ApiOperation(
     value = "Get a block data by block-id",
-    response = classOf[Block]
+    response = classOf[BlockRaw]
   )
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "Block not found")
@@ -48,7 +49,7 @@ class BlocksController @Inject()(cc: ControllerComponents, blockRepo: BlockRepos
 
   @ApiOperation(
     value = "Get a block data by block-number",
-    response = classOf[Block]
+    response = classOf[BlockRaw]
   )
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "Block not found")

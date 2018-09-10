@@ -1,6 +1,7 @@
 package repositories
 
 import javax.inject.Inject
+import models.Block
 import org.joda.time.DateTime
 import play.api.Logger
 
@@ -14,30 +15,9 @@ import play.modules.reactivemongo.ReactiveMongoApi
 /**
   * Created by bezalel on 28/08/2018.
   */
-
-case class Block(id: String,
-                 blockNumber: Long,
-                 timestamp: Long,
-                 producer: String,
-                 confirmed: Long,
-                 prevBlockId: String,
-                 transactionMerkleRoot: String,
-                 actionMerkleRoot: String,
-                 version: Int,
-                 newProducers: Option[JsValue],
-                 numTransactions: Int,
-                 trxVotes: Long,
-                 irreversible: Boolean)
-
-object BlockJsonFormats{
-  import play.api.libs.json._
-
-  implicit val blockFormat: OFormat[Block] = Json.format[Block]
-}
-
 class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi: ReactiveMongoApi){
 
-  import BlockJsonFormats._
+  import models.BlockJsonFormats._
 
   def blocksCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("blocks"))
 
