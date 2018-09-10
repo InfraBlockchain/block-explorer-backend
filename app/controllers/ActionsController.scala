@@ -2,10 +2,11 @@ package controllers
 
 import javax.inject.Inject
 import io.swagger.annotations._
-import repositories.ActionJsonFormats._
+import models.{Action, ActionRaw}
+import models.ActionJsonFormats._
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
-import repositories.{Action, ActionRepository}
+import repositories.ActionRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -48,7 +49,7 @@ class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRe
 
   @ApiOperation(
     value = "Get a action in a Transaction by transaction-id and action index",
-    response = classOf[Action]
+    response = classOf[ActionRaw]
   )
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "Action not found")
@@ -57,8 +58,8 @@ class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRe
   def getActionInTransaction(@ApiParam(value = "The transaction-id of the Action to fetch") transactionId: String,
                              @ApiParam(value = "The action index in transaction") idx: Int) = Action.async {
     actionRepo.getActionInTransaction(transactionId, idx).map { maybeAction =>
-      maybeAction.map { actionJs =>
-        Ok(actionJs)
+      maybeAction.map { actionRawJs =>
+        Ok(actionRawJs)
       }.getOrElse(NotFound)
     }
   }
@@ -66,7 +67,7 @@ class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRe
 
   @ApiOperation(
     value = "Search all Actions in a Block",
-    response = classOf[Action],
+    response = classOf[ActionRaw],
     responseContainer = "List"
   )
   def getActionsInTransaction(@ApiParam(value = "The id of the Transaction to fetch actions") transactionId: String,
@@ -80,7 +81,7 @@ class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRe
 
   @ApiOperation(
     value = "Search all Actions received by an account",
-    response = classOf[Action],
+    response = classOf[ActionRaw],
     responseContainer = "List"
   )
   def getActionsByReceiverAccount(@ApiParam(value = "The action receiver account name to fetch actions") account: String,
