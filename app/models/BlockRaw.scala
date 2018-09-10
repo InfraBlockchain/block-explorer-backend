@@ -7,8 +7,7 @@ import play.api.libs.json.JsValue
   */
 case class BlockRaw(block_id: String,
                     block_num: Int,
-                    block: BlockHeader
-                   )
+                    block: BlockHeader)
 
 case class BlockHeader(timestamp: String,
                        producer: String,
@@ -25,15 +24,13 @@ case class BlockHeader(timestamp: String,
                        trx_votes: Option[Seq[Seq[JsValue]]],
                        irrAt: Option[BSONDate],
                        validated: Boolean,
-                       in_current_chain: Boolean
-                      )
+                       in_current_chain: Boolean)
 
 case class ProducerSchedule(version: Int,
-                            producers: Seq[ProducerKey]
-                           )
+                            producers: Seq[ProducerKey])
 
 case class ProducerKey(producer_name: String,
                        block_signing_key: String)
 
-case class BSONDate($date: Long)
+case class BSONDate(_date: Long)
 

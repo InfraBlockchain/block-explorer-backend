@@ -1,6 +1,7 @@
 package repositories
 
 import javax.inject.Inject
+import models.Transaction
 import org.joda.time.DateTime
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoApi
@@ -14,25 +15,9 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
   * Created by bezalel on 29/08/2018.
   */
-
-case class Transaction(id: String,
-                       blockNum: Long,
-                       timestamp: Long,
-                       expiration: Long,
-                       pending: Boolean,
-                       numActions: Int,
-                       trxVote: Long,
-                       irreversible: Boolean)
-
-object TransactionJsonFormats{
-  import play.api.libs.json._
-
-  implicit val transactionFormat: OFormat[Transaction] = Json.format[Transaction]
-}
-
 class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi: ReactiveMongoApi){
 
-  import TransactionJsonFormats._
+  import models.TransactionJsonFormats._
 
   def transactionsCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("transactions"))
 //  def transactionTracesCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("transaction_traces"))
@@ -113,6 +98,7 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
       selector = Json.obj("id" -> id),
       projection = Option.empty[JsObject])
       .one[JsObject])
+      .map( _.map( _ - "_id") )
   }
 
   def getTransactionsForBlock(blockNumber: Long, page: Int, size: Int): Future[Seq[Transaction]] = {
