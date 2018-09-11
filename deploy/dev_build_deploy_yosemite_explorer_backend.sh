@@ -25,7 +25,12 @@ SERVER_ADDRESS="testnet-explorer-api.yosemitelabs.org"
 SERVER_USER_HOST="ubuntu@${SERVER_ADDRESS}"
 PLAY_APP_SERVER_TYPE="${red}[${PLAY_APP_NAME}]${green}[DevelopmentServer]${magenta}[${PLAY_APP_SERVER_NAME}]${reset}"
 
-echo "${red}Do you want to ${PLAY_APP_SERVER_TYPE}?${reset}"
+echo "${green}PLAY_BASE_PATH${reset}=${red}$PLAY_BASE_PATH${reset}"
+echo "${green}PLAY_APP_DIST_FILE${reset}=${red}$PLAY_APP_DIST_FILE${reset}"
+echo "${green}SERVER_ADDRESS${reset}=${red}$SERVER_ADDRESS${reset}"
+echo "${green}PLAY_APP_SERVER_TYPE${reset}=${red}$PLAY_APP_SERVER_TYPE${reset}"
+
+echo "${red}Do you want to deploy ${PLAY_APP_SERVER_TYPE}?${reset}"
 echo "write YES to proceed deploy process"
 read USER_CONFIRM_TO_PROCEED
 if [ "$USER_CONFIRM_TO_PROCEED" != "YES" ]; then
