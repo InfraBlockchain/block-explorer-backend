@@ -4,20 +4,19 @@
 
 # Blocks
 GET       /blocks                            controllers.BlocksController.getBlocks(page: Int ?= 1, size: Int ?= 30)
-GET       /blocks/id/:id                     controllers.BlocksController.getBlockById(id)
-GET       /blocks/:num                       controllers.BlocksController.getBlockByBlockNum(num: Long)
-GET       /blocks/:blockNum/transactions     controllers.TransactionsController.getTransactionsForBlock(blockNum: Long, page: Int ?= 1, size: Int ?= 30)
+GET       /block/id/:id                      controllers.BlocksController.getBlockById(id)
+GET       /block/:num                        controllers.BlocksController.getBlockByBlockNum(num: Long)
+GET       /block/:blockNum/transactions      controllers.TransactionsController.getTransactionsForBlock(blockNum: Long, page: Int ?= 1, size: Int ?= 30)
 
 # Transactions
 GET       /transactions                      controllers.TransactionsController.getTransactions(page: Int ?= 1, size: Int ?= 30)
-GET       /transactions/:id                  controllers.TransactionsController.getTransactionById(id)
+GET       /transaction/:id                   controllers.TransactionsController.getTransactionById(id)
 
 # Actions
-GET       /actions/:id                       controllers.ActionsController.getActionById(id)
-GET       /transactions/:txid/actions/:idx   controllers.ActionsController.getActionInTransaction(txid, idx: Int)
-GET       /transactions/:txid/actions        controllers.ActionsController.getActionsInTransaction(txid, page: Int ?= 1, size: Int ?= 100)
-GET       /actions/:id                       controllers.ActionsController.getActionById(id)
-GET       /actions/account/:name             controllers.ActionsController.getActionsByReceiverAccount(name, start: Long ?= -1, offset: Int ?= -50)
+GET       /action/:id                        controllers.ActionsController.getActionById(id)
+GET       /transaction/:txid/actions/:idx    controllers.ActionsController.getActionInTransaction(txid, idx: Int)
+GET       /transaction/:txid/actions         controllers.ActionsController.getActionsInTransaction(txid, page: Int ?= 1, size: Int ?= 100)
+GET       /account/:name/actions             controllers.ActionsController.getActionsByReceiverAccount(name, start: Long ?= -1, offset: Int ?= -50)
 
 
 # Swagger docs
