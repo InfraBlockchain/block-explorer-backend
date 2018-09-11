@@ -47,12 +47,15 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
     Action(actionId, transaction, account, name, authorization, data, seq, parent)
   }
 
-  def getActionById(id: String): Future[Option[Action]] = {
+  def getActionById(global_sequence: Long): Future[Option[JsObject]] = {
     actionTracesCollection.flatMap(_.find(
-      selector = Json.obj("_id" -> Json.obj("$oid" -> id)),
+//      selector = Json.obj("_id" -> Json.obj("$oid" -> id)),
+      selector = Json.obj("receipt.global_sequence" -> global_sequence),
 //      projection = Option.empty[JsObject])
       projection = Some(Json.obj("receipt" -> 1, "act" -> 1, "trx_id" -> 1)))
-      .one[JsObject]).map(_.map(_toAction(Some(id), None, _)))
+      .one[JsObject])
+//      .map(_.map(_toAction(Some(id), None, _)))
+      .map( _.map( _ - "_id") )
   }
 
   // provides action blockchain raw data

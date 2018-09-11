@@ -32,13 +32,13 @@ class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRe
 
   @ApiOperation(
     value = "Get a action data by action-id",
-    response = classOf[Action]
+    response = classOf[ActionRaw]
   )
   @ApiResponses(Array(
     new ApiResponse(code = 404, message = "Action not found")
   )
   )
-  def getActionById(@ApiParam(value = "The id of the Action to fetch") actionId: String) = Action.async {
+  def getActionById(@ApiParam(value = "The id (global_sequence) of the Action to fetch") actionId: Long) = Action.async {
     actionRepo.getActionById(actionId).map { maybeAction =>
       maybeAction.map { action =>
         Ok(Json.toJson(action))
@@ -66,7 +66,7 @@ class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRe
 
 
   @ApiOperation(
-    value = "Search all Actions in a Block",
+    value = "Search all Actions in a Transaction",
     response = classOf[ActionRaw],
     responseContainer = "List"
   )

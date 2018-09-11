@@ -13,7 +13,7 @@ GET       /transactions                      controllers.TransactionsController.
 GET       /transaction/:id                   controllers.TransactionsController.getTransactionById(id)
 
 # Actions
-GET       /action/:id                        controllers.ActionsController.getActionById(id)
+GET       /action/:id                        controllers.ActionsController.getActionById(id: Long)
 GET       /transaction/:txid/actions/:idx    controllers.ActionsController.getActionInTransaction(txid, idx: Int)
 GET       /transaction/:txid/actions         controllers.ActionsController.getActionsInTransaction(txid, page: Int ?= 1, size: Int ?= 100)
 GET       /account/:name/actions             controllers.ActionsController.getActionsByReceiverAccount(name, start: Long ?= -1, offset: Int ?= -50)
