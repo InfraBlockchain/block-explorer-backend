@@ -10,6 +10,7 @@ val reactiveMongoVer = "0.16.0-play26"
 
 libraryDependencies ++= Seq(
   guice,
+  ws,
   "org.reactivemongo"      %% "play2-reactivemongo" % reactiveMongoVer,
   "io.swagger"             %% "swagger-play2"       % "1.6.0",
   "org.webjars"            %  "swagger-ui"          % "3.2.2",
