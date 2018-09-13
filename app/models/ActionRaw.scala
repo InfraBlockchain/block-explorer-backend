@@ -14,6 +14,9 @@ case class ActionRaw(receipt: ActionReceipt,
                      bNum: Int,
                      bTime: BSONDate)
 
+case class ActionRawList(lastIrrBlkNum: Long,
+                         actions: Seq[ActionRaw])
+
 case class ActionReceipt(receiver: String,
                          act_digest: String,
                          global_sequence: Long,

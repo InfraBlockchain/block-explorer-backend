@@ -1,8 +1,9 @@
 package controllers
 
+import blockchain.YosemiteChainStatus
 import javax.inject.Inject
 import io.swagger.annotations._
-import models.{Action, ActionRaw}
+import models.{Action, ActionRaw, ActionRawList}
 import models.ActionJsonFormats._
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
@@ -15,7 +16,9 @@ import scala.concurrent.Future
   * Created by bezalel on 29/08/2018.
   */
 @Api(value = "/actions")
-class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRepository) extends AbstractController(cc) {
+class ActionsController @Inject()(cc: ControllerComponents,
+                                  actionRepo: ActionRepository,
+                                  yosemiteChainStatus: YosemiteChainStatus) extends AbstractController(cc) {
 
 //  @ApiOperation(
 //    value = "Search all Transactions",
@@ -81,14 +84,14 @@ class ActionsController @Inject()(cc: ControllerComponents, actionRepo: ActionRe
 
   @ApiOperation(
     value = "Search all Actions received by an account",
-    response = classOf[ActionRaw],
-    responseContainer = "List"
+    response = classOf[ActionRawList]
   )
   def getActionsByReceiverAccount(@ApiParam(value = "The action receiver account name to fetch actions") account: String,
                                   @ApiParam(value = "action receiver sequence number to start fetching actions (exclusive for reverse search, inclusive for forward search) (default : -1 : next sequence number of the last(recent) actions)") start: Long,
                                   @ApiParam(value = "offset to the end sequence number to fetch actions (default : -50)") offset: Int) = Action.async {
     actionRepo.getActionsByReceiverAccount(account, start, offset).map { actions =>
-      Ok(Json.toJson(actions))
+      Ok(Json.obj("lastIrrBlkNum" -> yosemiteChainStatus.getLastIrreversibleBlockNum(),
+        "actions" -> Json.toJson(actions)))
     }
   }
 
