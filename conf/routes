@@ -18,6 +18,8 @@ GET       /transaction/:txid/actions/:idx    controllers.ActionsController.getAc
 GET       /transaction/:txid/actions         controllers.ActionsController.getActionsInTransaction(txid, page: Int ?= 1, size: Int ?= 100)
 GET       /account/:name/actions             controllers.ActionsController.getActionsByReceiverAccount(name, start: Long ?= -1, offset: Int ?= -50)
 
+# Accounts
+GET       /account/:name                     controllers.AccountsController.getAccountByName(name)
 
 # Swagger docs
 GET       /                                  controllers.ApiDocsController.redirectToDocs
