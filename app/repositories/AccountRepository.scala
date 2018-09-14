@@ -1,12 +1,10 @@
 package repositories
 
 import javax.inject.Inject
-import models.Account
-import org.joda.time.DateTime
+import models.{Account, AccountPermission}
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.{Cursor, ReadPreference}
-import reactivemongo.bson.BSONObjectID
 import reactivemongo.play.json._
 import reactivemongo.play.json.collection.JSONCollection
 
@@ -20,6 +18,7 @@ class AccountRepository @Inject() (implicit ec: ExecutionContext, reactiveMongoA
   import models.AccountJsonFormats._
 
   def accountsCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("accounts"))
+  def publicKeysCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("pub_keys"))
 
   def _toAccount(jsDoc: JsObject): Account = {
     //    Logger.warn(doc.toString())
@@ -40,6 +39,26 @@ class AccountRepository @Inject() (implicit ec: ExecutionContext, reactiveMongoA
       .map( _.map(_toAccount(_)) )
   }
 
+  def _toAccountPermission(jsDoc: JsObject): AccountPermission = {
+    //    Logger.warn(doc.toString())
+
+    val publicKey = (jsDoc \ "public_key").as[String]
+    val account = (jsDoc \ "account").as[String]
+    val permission = (jsDoc \ "permission").as[String]
+    val createdAt = (jsDoc \ "createdAt" \ "$date").as[Long]
+
+    AccountPermission(publicKey, account, permission, createdAt)
+  }
+
+  def getAccountPermissionsByPubKey(publicKey: String): Future[Seq[AccountPermission]] = {
+    publicKeysCollection.flatMap(_.find(
+      selector = Json.obj("public_key" -> publicKey),
+      projection = Option.empty[JsObject])
+      .cursor[JsObject](ReadPreference.primary)
+      .collect[Seq](100, Cursor.FailOnError[Seq[JsObject]]())
+      .map(_.map(_toAccountPermission(_)))
+    )
+  }
 }
 
 /**
@@ -379,5 +398,23 @@ class AccountRepository @Inject() (implicit ec: ExecutionContext, reactiveMongoA
       ]
    },
    "updatedAt":   ISODate("2018-09-11T06:28:06.145   Z")
+}
+  */
+
+/**
+  * Document sample in 'pub_keys' collection
+{
+   "_id":ObjectId("5b97607e2178c50c5f8c6ae9"),
+   "account":"producer.g",
+   "permission":"owner",
+   "public_key":"YOS5t1fHFunR2rWq5z8NHPrxj1H4xG5Vq4bGKcH33yg1eZMCVPQRq",
+   "createdAt":   ISODate("2018-09-11T06:28:14.109   Z")
+}
+{
+   "_id":ObjectId("5b97607e2178c50c5f8c6aea"),
+   "account":"producer.g",
+   "permission":"active",
+   "public_key":"YOS5t1fHFunR2rWq5z8NHPrxj1H4xG5Vq4bGKcH33yg1eZMCVPQRq",
+   "createdAt":   ISODate("2018-09-11T06:28:14.109   Z")
 }
   */

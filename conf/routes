@@ -20,6 +20,7 @@ GET       /account/:name/actions             controllers.ActionsController.getAc
 
 # Accounts
 GET       /account/:name                     controllers.AccountsController.getAccountByName(name)
+GET       /pubkey/:pubKey/permissions        controllers.AccountsController.getAccountPermissionsByPubKey(pubKey)
 
 # Swagger docs
 GET       /                                  controllers.ApiDocsController.redirectToDocs

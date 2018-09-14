@@ -2,8 +2,9 @@ package controllers
 
 import javax.inject.Inject
 import io.swagger.annotations._
-import models.Account
+import models.{Account, AccountPermission}
 import models.AccountJsonFormats._
+import models.AccountPermissionJsonFormats._
 import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, ControllerComponents}
 import repositories.AccountRepository
@@ -31,6 +32,17 @@ class AccountsController @Inject()(cc: ControllerComponents,
       maybeAccount.map { account =>
         Ok(Json.toJson(account))
       }.getOrElse(NotFound)
+    }
+  }
+
+  @ApiOperation(
+    value = "Search all account permissions for which the specific public key (search parameter) is set as an authority",
+    response = classOf[AccountPermission],
+    responseContainer = "List"
+  )
+  def getAccountPermissionsByPubKey(@ApiParam(value = "The base58-encoded public key string") publicKey: String) = Action.async {
+    accountRepo.getAccountPermissionsByPubKey(publicKey).map { permissions =>
+      Ok(Json.toJson(permissions))
     }
   }
 
