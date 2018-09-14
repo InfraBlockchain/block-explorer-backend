@@ -47,7 +47,7 @@ class AccountRepository @Inject() (implicit ec: ExecutionContext, reactiveMongoA
     val permission = (jsDoc \ "permission").as[String]
     val createdAt = (jsDoc \ "createdAt" \ "$date").as[Long]
 
-    AccountPermission(publicKey, account, permission, createdAt)
+    AccountPermission(account, permission, publicKey, createdAt)
   }
 
   def getAccountPermissionsByPubKey(publicKey: String): Future[Seq[AccountPermission]] = {
