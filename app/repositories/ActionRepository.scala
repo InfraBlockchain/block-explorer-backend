@@ -19,10 +19,8 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
 
   def actionTracesCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("action_traces"))
 
-  def _toAction(actionIdOpt: Option[String], transactionIdOpt: Option[String],  doc: JsObject): Action = {
+  def _toAction(actionIdOpt: Option[String], transactionIdOpt: Option[String],  jsDoc: JsObject): Action = {
 //    Logger.warn(doc.toString())
-
-    val jsDoc = Json.toJson(doc)
 
     val actionId: String = actionIdOpt match {
       case Some(aid) => aid

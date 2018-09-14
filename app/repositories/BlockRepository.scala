@@ -21,9 +21,8 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
 
   def blocksCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("blocks"))
 
-  def _toBlock(blockIdOpt: Option[String], blockNumOpt: Option[Long], doc: JsObject): Block = {
+  def _toBlock(blockIdOpt: Option[String], blockNumOpt: Option[Long], jsDoc: JsObject): Block = {
 //    Logger.warn(doc.toString())
-    val jsDoc = Json.toJson(doc)
 
     val blockId: String = blockIdOpt match {
       case Some(bid) => bid

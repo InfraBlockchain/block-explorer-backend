@@ -22,10 +22,8 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
   def transactionsCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("transactions"))
 //  def transactionTracesCollection: Future[JSONCollection] = reactiveMongoApi.database.map(_.collection("transaction_traces"))
 
-  def _toTransaction(trxIdOpt: Option[String], doc: JsObject): Transaction = {
+  def _toTransaction(trxIdOpt: Option[String], jsDoc: JsObject): Transaction = {
 //    Logger.warn(doc.toString())
-
-    val jsDoc = Json.toJson(doc)
 
     val trxId: String = trxIdOpt match {
       case Some(tid) => tid
