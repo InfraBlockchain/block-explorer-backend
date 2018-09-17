@@ -87,7 +87,7 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
   }
 
   // provides action blockchain raw data
-  def getActionsByReceiverAccount(receiverAccount: String, start_seq: Long, offset: Int): Future[Seq[JsObject]] = {
+  def getReceivedActionsByAccount(receiverAccount: String, start_seq: Long, offset: Int): Future[Seq[JsObject]] = {
     if (start_seq == -1L) {
       if (offset < 0) {
         actionTracesCollection.flatMap(_.find(
@@ -128,6 +128,47 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
     }
   }
 
+  // provides action blockchain raw data
+  def getSentActionsByAccount(senderAccount: String, startGlobalSeq: Long, offsetCount: Int): Future[Seq[JsObject]] = {
+    if (startGlobalSeq == -1L) {
+      if (offsetCount < 0) {
+        actionTracesCollection.flatMap(_.find(
+          selector = Json.obj("sender" -> senderAccount),
+          projection = Option.empty[JsObject])
+          .sort(Json.obj("receipt.global_sequence" -> -1))
+          .cursor[JsObject](ReadPreference.primary)
+          .collect[Seq](-offsetCount, Cursor.FailOnError[Seq[JsObject]]())
+          .map(_.map(_ - "_id"))
+        )
+      } else {
+        Future.successful(Seq())
+      }
+    } else {
+      if (offsetCount < 0) {
+        actionTracesCollection.flatMap(_.find(
+          selector = Json.obj("sender" -> senderAccount,
+            "receipt.global_sequence" -> Json.obj("$lt" -> startGlobalSeq)),
+          projection = Option.empty[JsObject])
+          .sort(Json.obj("receipt.global_sequence" -> -1))
+          .cursor[JsObject](ReadPreference.primary)
+          .collect[Seq](-offsetCount, Cursor.FailOnError[Seq[JsObject]]())
+          .map(_.map( _ - "_id"))
+        )
+      } else if (offsetCount > 0) {
+        actionTracesCollection.flatMap(_.find(
+          selector = Json.obj("sender" -> senderAccount,
+            "receipt.global_sequence" -> Json.obj("$gte" -> startGlobalSeq)),
+          projection = Option.empty[JsObject])
+          .sort(Json.obj("receipt.global_sequence" -> 1))
+          .cursor[JsObject](ReadPreference.primary)
+          .collect[Seq](offsetCount, Cursor.FailOnError[Seq[JsObject]]())
+          .map(_.map( _ - "_id"))
+        )
+      } else {
+        Future.successful(Seq())
+      }
+    }
+  }
 }
 
 /**
@@ -184,5 +225,60 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
    "bNum":492,
    "bTime":   ISODate("2018-09-08T04:48:02   Z"),
    "parent":NumberLong(648)
+}
+
+{
+   "_id":ObjectId("5b9f0721ff06712d8fa3698b"),
+   "receipt":{
+      "receiver":"yx.ntoken",
+      "act_digest":"6fefc30446702e9a4ed312272b9d7f6331c564db314c6cbcd152284aa6149744",
+      "global_sequence":563,
+      "recv_sequence":15,
+      "auth_sequence":[
+         [
+            "useraccount2",
+            14
+         ],
+         [
+            "useraccount3",
+            1
+         ]
+      ],
+      "code_sequence":1,
+      "abi_sequence":1
+   },
+   "act":{
+      "account":"yx.ntoken",
+      "name":"wptransfer",
+      "authorization":[
+         {
+            "actor":"useraccount3",
+            "permission":"active"
+         },
+         {
+            "actor":"useraccount2",
+            "permission":"active"
+         }
+      ],
+      "data":{
+         "from":"useraccount3",
+         "to":"useraccount2",
+         "amount":"10000.0000 DKRW",
+         "payer":"useraccount2",
+         "memo":"memo"
+      },
+      "hex_data":"30f2d414217315d620f2d414217315d600e1f5050000000004444b525700000020f2d414217315d6046d656d6f"
+   },
+   "elapsed":2565,
+   "cpu_usage":0,
+   "console":"",
+   "total_cpu_usage":0,
+   "trx_id":"1c186eb3ff557a3570ee312a24e35c8afab43f01affd2eed48e59589070a8bac",
+   "bNum":420,
+   "bTime":   ISODate("2018-09-17T01:45:05.500   Z"),
+   "sender":[
+      "useraccount3",
+      "useraccount2"
+   ]
 }
   */
