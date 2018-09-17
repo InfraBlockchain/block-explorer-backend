@@ -18,8 +18,10 @@ GET       /transaction/:txid/actions/:idx    controllers.ActionsController.getAc
 GET       /transaction/:txid/actions         controllers.ActionsController.getActionsInTransaction(txid, page: Int ?= 1, size: Int ?= 100)
 GET       /account/:name/actions/received    controllers.ActionsController.getReceivedActionsByAccount(name, start: Long ?= -1, offset: Int ?= -50)
 GET       /account/:name/actions/sent        controllers.ActionsController.getSentActionsByAccount(name, start: Long ?= -1, offset: Int ?= -50)
+
 # deprecated
-GET       /account/:name/actions             controllers.ActionsController.getReceivedActionsByAccount(name, start: Long ?= -1, offset: Int ?= -50)
+GET       /account/:name/actions             controllers.ActionsController.getActionsByAccount(name, start: Long ?= -1, offset: Int ?= -50)
+
 
 # Accounts
 GET       /account/:name                     controllers.AccountsController.getAccountByName(name)

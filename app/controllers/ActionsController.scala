@@ -20,19 +20,6 @@ class ActionsController @Inject()(cc: ControllerComponents,
                                   actionRepo: ActionRepository,
                                   yosemiteChainStatus: YosemiteChainStatus) extends AbstractController(cc) {
 
-//  @ApiOperation(
-//    value = "Search all Transactions",
-//    response = classOf[Transaction],
-//    responseContainer = "List"
-//  )
-//  def getTransactions(@ApiParam(value = "page number to fetch recent transaction list, first page = 1 (default : 1)") page: Int,
-//                      @ApiParam(value = "the number of transactions in current page (default : 30)") size: Int) = Action.async {
-//    transactionRepo.getTransactions(page, size).map { transactions =>
-//      Ok(Json.toJson(transactions))
-//    }
-//  }
-
-
   @ApiOperation(
     value = "Get a action data by action-id",
     response = classOf[ActionRaw]
@@ -82,6 +69,21 @@ class ActionsController @Inject()(cc: ControllerComponents,
   }
 
 
+  @Deprecated
+  @ApiOperation(
+    value = "Search all Actions received by an account",
+    response = classOf[ActionRawList]
+  )
+  def getActionsByAccount(@ApiParam(value = "The action receiver account name to fetch actions") account: String,
+                          @ApiParam(value = "action receiver sequence number to start fetching actions (exclusive for reverse search, inclusive for forward search) (default : -1 : next sequence number of the last(recent) actions)") start: Long,
+                          @ApiParam(value = "offset to the end sequence number to fetch actions (default : -50)") offset: Int) = Action.async {
+    actionRepo.getReceivedActionsByAccount(account, start, offset).map { actions =>
+      Ok(Json.obj("lastIrrBlkNum" -> yosemiteChainStatus.getLastIrreversibleBlockNum(),
+        "actions" -> Json.toJson(actions)))
+    }
+  }
+
+
   @ApiOperation(
     value = "Search all Actions received by an account",
     response = classOf[ActionRawList]
@@ -94,6 +96,7 @@ class ActionsController @Inject()(cc: ControllerComponents,
         "actions" -> Json.toJson(actions)))
     }
   }
+
 
   @ApiOperation(
     value = "Search all Actions sent by an account",
