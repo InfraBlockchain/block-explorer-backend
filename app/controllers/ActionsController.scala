@@ -86,10 +86,23 @@ class ActionsController @Inject()(cc: ControllerComponents,
     value = "Search all Actions received by an account",
     response = classOf[ActionRawList]
   )
-  def getActionsByReceiverAccount(@ApiParam(value = "The action receiver account name to fetch actions") account: String,
+  def getReceivedActionsByAccount(@ApiParam(value = "The action receiver account name to fetch actions") account: String,
                                   @ApiParam(value = "action receiver sequence number to start fetching actions (exclusive for reverse search, inclusive for forward search) (default : -1 : next sequence number of the last(recent) actions)") start: Long,
                                   @ApiParam(value = "offset to the end sequence number to fetch actions (default : -50)") offset: Int) = Action.async {
-    actionRepo.getActionsByReceiverAccount(account, start, offset).map { actions =>
+    actionRepo.getReceivedActionsByAccount(account, start, offset).map { actions =>
+      Ok(Json.obj("lastIrrBlkNum" -> yosemiteChainStatus.getLastIrreversibleBlockNum(),
+        "actions" -> Json.toJson(actions)))
+    }
+  }
+
+  @ApiOperation(
+    value = "Search all Actions sent by an account",
+    response = classOf[ActionRawList]
+  )
+  def getSentActionsByAccount(@ApiParam(value = "The action sender account name") account: String,
+                              @ApiParam(value = "sent-action global sequence number to start fetching actions (exclusive for reverse search, inclusive for forward search) (default : -1 : next index number of the last(recent) actions)") start: Long,
+                              @ApiParam(value = "offset item count to fetch actions (offset < 0 : reverse search, offset > 0 : forward search, default : -50)") offset: Int) = Action.async {
+    actionRepo.getSentActionsByAccount(account, start, offset).map { actions =>
       Ok(Json.obj("lastIrrBlkNum" -> yosemiteChainStatus.getLastIrreversibleBlockNum(),
         "actions" -> Json.toJson(actions)))
     }

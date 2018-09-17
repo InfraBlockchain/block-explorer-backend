@@ -16,7 +16,10 @@ GET       /transaction/:id                   controllers.TransactionsController.
 GET       /action/:id                        controllers.ActionsController.getActionById(id: Long)
 GET       /transaction/:txid/actions/:idx    controllers.ActionsController.getActionInTransaction(txid, idx: Int)
 GET       /transaction/:txid/actions         controllers.ActionsController.getActionsInTransaction(txid, page: Int ?= 1, size: Int ?= 100)
-GET       /account/:name/actions             controllers.ActionsController.getActionsByReceiverAccount(name, start: Long ?= -1, offset: Int ?= -50)
+GET       /account/:name/actions/received    controllers.ActionsController.getReceivedActionsByAccount(name, start: Long ?= -1, offset: Int ?= -50)
+GET       /account/:name/actions/sent        controllers.ActionsController.getSentActionsByAccount(name, start: Long ?= -1, offset: Int ?= -50)
+# deprecated
+GET       /account/:name/actions             controllers.ActionsController.getReceivedActionsByAccount(name, start: Long ?= -1, offset: Int ?= -50)
 
 # Accounts
 GET       /account/:name                     controllers.AccountsController.getAccountByName(name)
