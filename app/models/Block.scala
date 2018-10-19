@@ -7,7 +7,7 @@ import play.api.libs.json.JsValue
   */
 case class Block(id: String,
                  blockNumber: Long,
-                 timestamp: Long,
+                 blockTime: String,
                  producer: String,
                  confirmed: Long,
                  prevBlockId: String,

@@ -33,8 +33,8 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
       case _ => (jsDoc \ "block_num").as[Long]
     }
     val jsBlock = (jsDoc \ "block").as[JsValue]
-    val tsStr = (jsBlock \ "timestamp").as[String]
-    val timestamp : Long = DateTime.parse(tsStr + "Z").toInstant.getMillis
+    val blockTimeStr = (jsBlock \ "timestamp").as[String]
+    //val timestamp : Long = DateTime.parse(blockTimeStr + "Z").toInstant.getMillis
     val producer = (jsBlock \ "producer").as[String]
     val confirmed = (jsBlock \ "confirmed").as[Long]
     val prevBlockId = (jsBlock \ "previous").as[String]
@@ -55,7 +55,7 @@ class BlockRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi:
 
     val irreversibleAtOpt = (jsDoc \ "irrAt").asOpt[JsValue].map{ jsVal => (jsVal \ "$date").asOpt[Long].getOrElse(0L) }
 
-    Block(blockId, blockNumber, timestamp, producer, confirmed, prevBlockId,
+    Block(blockId, blockNumber, blockTimeStr, producer, confirmed, prevBlockId,
       transactionMerkleRoot, actionMerkleRoot,
       version, newProducersOpt, numTransactions, trxVotes, (irreversibleAtOpt.getOrElse(0L) > 0L))
   }

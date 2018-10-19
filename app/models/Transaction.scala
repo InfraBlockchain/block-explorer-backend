@@ -5,7 +5,7 @@ package models
   */
 case class Transaction(id: String,
                        blockNum: Long,
-                       timestamp: Long,
+                       blockTime: String,
                        expiration: Long,
                        pending: Boolean,
                        numActions: Int,

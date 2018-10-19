@@ -6,6 +6,9 @@ import play.api.libs.json.{JsObject, JsValue}
   * Created by bezalel on 10/09/2018.
   */
 case class TransactionRaw(id: String,
+                          block_num: Int,
+                          block_time: String,
+                          producer_block_id: Option[String],
                           receipt: TransactionReceiptHeader,
                           elapsed: Long,
                           net_usage: Long,
@@ -13,8 +16,7 @@ case class TransactionRaw(id: String,
                           action_traces: Seq[ActionTrace],
                           trx_vote: Option[TransactionVote],
                           except: JsValue,
-                          bNum: Option[Int],
-                          bTime: Option[BSONDate],
+                          BN: Option[Int],
                           expiration: String,
                           ref_block_num: Short,
                           ref_block_prefix: Int,
@@ -27,9 +29,9 @@ case class TransactionRaw(id: String,
                           context_free_data: Option[Seq[String]],
                           signing_keys: JsObject,
                           accepted: Boolean,
-                          implicit_ : Boolean,
-                          irrAt: Option[BSONDate],
-                          bId: Option[String])
+                          implicit_ : Boolean, // 'implicit' is not allowed as variable name in scala code
+                          block_id: Option[String],
+                          irrAt: Option[BSONDate])
 
 case class TransactionReceiptHeader(status: String,
                                     cpu_usage_us: Int,

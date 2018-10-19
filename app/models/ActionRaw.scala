@@ -7,12 +7,19 @@ import play.api.libs.json.{JsObject, JsValue}
   */
 case class ActionRaw(receipt: ActionReceipt,
                      act: ActionItem,
+                     context_free: Boolean,
+                     elapsed: Long,
                      cpu_usage: Long,
                      console: String,
                      total_cpu_usage: Long,
                      trx_id: String,
-                     bNum: Int,
-                     bTime: BSONDate)
+                     block_num: Int,
+                     block_time: String,
+                     producer_block_id: Option[String],
+                     account_ram_deltas: Option[Seq[AccountRamDelta]],
+                     sender: Option[Seq[String]],
+                     parent: Option[Long]
+                    )
 
 case class ActionRawList(lastIrrBlkNum: Long,
                          actions: Seq[ActionRaw])
@@ -44,3 +51,6 @@ case class ActionTrace(receipt: ActionReceipt,
                        total_cpu_usage: Long,
                        trx_id: String,
                        inline_traces: ActionTrace)
+
+case class AccountRamDelta(account: String,
+                           delta: Long)

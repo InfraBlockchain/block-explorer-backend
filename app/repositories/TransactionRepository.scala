@@ -35,24 +35,14 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
     val numActions = (jsDoc \ "actions").asOpt[JsArray].getOrElse(JsArray()).value.size
     val pending = (jsDoc \ "scheduled").as[Boolean]
 //    val blockId = (jsDoc \ "block_id").asOpt[String].getOrElse("")
-    val blockNum = (jsDoc \ "bNum").asOpt[Long].getOrElse(0L)
-
-//    val timestamp = (jsDoc \ "createdAt" \ "$date").as[Long] / 1000
-
-    var timestamp: Long = 0L
-    val blockTimeOpt = (jsDoc \ "bTime").asOpt[JsValue].map{ jsVal => (jsVal \ "$date").asOpt[Long].getOrElse(0L) }
-    if (blockTimeOpt.isDefined) {
-      timestamp = blockTimeOpt.get
-    } else {
-      val docId: String = (jsDoc \ "_id" \ "$oid").as[String]
-      timestamp = BSONObjectID.parse(docId).get.time
-    }
+    val blockNum = (jsDoc \ "BN").asOpt[Long].getOrElse(0L)
+    val blockTimeStr = (jsDoc \ "block_time").as[String]
 
     val transactionVoteOpt = (jsDoc \ "trx_vote").asOpt[JsValue].map{ jsVal => (jsVal \ "amt").asOpt[Long].getOrElse(0L)}
 
     val irreversibleAtOpt = (jsDoc \ "irrAt").asOpt[JsValue].map{ jsVal => (jsVal \ "$date").asOpt[Long].getOrElse(0L) }
 
-    Transaction(trxId, blockNum, timestamp, expiration, pending, numActions,
+    Transaction(trxId, blockNum, blockTimeStr, expiration, pending, numActions,
       transactionVoteOpt.getOrElse(0L), (irreversibleAtOpt.getOrElse(0L) > 0L))
   }
 
@@ -60,10 +50,10 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
     transactionsCollection.flatMap(_.find(
       selector = Json.obj("implicit" -> false),
 //      projection = Option.empty[JsObject])
-      projection = Some(Json.obj("_id" -> 1, "id" -> 1, "expiration" -> 1,
+      projection = Some(Json.obj("id" -> 1, "expiration" -> 1,
         "actions" -> 1, "scheduled" -> 1,
-        "trx_vote" -> 1, "bNum" -> 1, "bTime" -> 1, "irrAt" -> 1)))
-      .sort(Json.obj("bTime" -> -1))
+        "trx_vote" -> 1, "BN" -> 1, "block_time" -> 1, "irrAt" -> 1)))
+      .sort(Json.obj("BN" -> -1))
       .skip(size*(page-1))
       .cursor[JsObject](ReadPreference.primary)
       .collect[Seq](size, Cursor.FailOnError[Seq[JsObject]]())
@@ -96,16 +86,16 @@ class TransactionRepository @Inject()(implicit ec: ExecutionContext, reactiveMon
       selector = Json.obj("id" -> id),
       projection = Option.empty[JsObject])
       .one[JsObject])
-      .map( _.map( _ - "_id") )
+      //.map( _.map( _ - "_id") )
   }
 
   def getTransactionsForBlock(blockNumber: Long, page: Int, size: Int): Future[Seq[Transaction]] = {
     transactionsCollection.flatMap(_.find(
-      selector = Json.obj("bNum" -> blockNumber),
+      selector = Json.obj("implicit" -> false, "BN" -> blockNumber),
 //      projection = Option.empty[JsObject])
-      projection = Some(Json.obj("_id" -> 1, "id" -> 1, "expiration" -> 1,
+      projection = Some(Json.obj("id" -> 1, "expiration" -> 1,
         "actions" -> 1, "scheduled" -> 1,
-        "trx_vote" -> 1, "bNum" -> 1, "bTime" -> 1, "irrAt" -> 1)))
+        "trx_vote" -> 1, "BN" -> 1, "block_time" -> 1, "irrAt" -> 1)))
       .skip(size*(page-1))
       .cursor[JsObject](ReadPreference.primary)
       .collect[Seq](size, Cursor.FailOnError[Seq[JsObject]]())
