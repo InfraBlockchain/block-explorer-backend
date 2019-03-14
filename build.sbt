@@ -1,6 +1,6 @@
 name := "yosemite-explorer-backend"
 
-version := "1.0-SNAPSHOT"
+version := "1.0.3"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
@@ -20,3 +20,5 @@ libraryDependencies ++= Seq(
 import play.sbt.routes.RoutesKeys
 
 RoutesKeys.routesImport += "play.modules.reactivemongo.PathBindables._"
+
+dockerBaseImage := "amazoncorretto:8"
