@@ -1,11 +1,11 @@
-# yosemite-explorer-backend
-YOSEMITE Blockchain Explorer API Server Backend connected to a mongodb blockchain log store managed by mongo_db_plugin of YOSEMITE blockchain.
+# InfraBlockchain block-explorer-backend
+InfraBlockchain Explorer API Server Backend connected to a mongodb blockchain log store managed by mongo_db_plugin of InfraBlockchain.
 
-### YOSEMITE Blockchain Explorer API server (Public-Test-Net)
-http://testnet-explorer-api.yosemitelabs.org
+### InfraBlockchain Explorer API server (Public-Test-Net)
+http://testnet-sentinel-explorer.yosemitelabs.org
 
 ### REST API Testing and Documentation (Swagger)
-http://testnet-explorer-api.yosemitelabs.org
+http://testnet-sentinel-explorer-api.yosemitelabs.org/
 
 
 ### Action APIs

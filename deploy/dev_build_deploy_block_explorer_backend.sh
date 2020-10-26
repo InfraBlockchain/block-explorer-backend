@@ -1,5 +1,5 @@
 #!/bin/bash
-# chmod +x prod_build_deploy_yosemite_explorer_backend.sh
+# chmod +x dev_build_deploy_block_explorer_backend.sh
 
 args=("$@")
 
@@ -7,7 +7,7 @@ args=("$@")
 PLAY_APP_SERVER_NAME="testnet-explorer-backend-server"
 BASEDIR=$(dirname "$0")
 
-PLAY_APP_NAME="yosemite-explorer-backend"
+PLAY_APP_NAME="block-explorer-backend"
 PLAY_APP_VERSION="1.0-SNAPSHOT"
 
 red=`tput setaf 1`
@@ -18,13 +18,19 @@ reset=`tput sgr0`
 PLAY_BASE_PATH="${BASEDIR}/.."
 PLAY_APP_DIST_FILE_NAME="${PLAY_APP_NAME}-${PLAY_APP_VERSION}.zip"
 PLAY_APP_DIST_FILE="${PLAY_BASE_PATH}/target/universal/${PLAY_APP_DIST_FILE_NAME}"
-RUN_PLAY_APP_SERVERSIDE_SCRIPT="${PLAY_BASE_PATH}/deploy/prod_run_yosemite_explorer_backend_serverside.sh"
-SERVER_SSH_KEY_FILE="${PLAY_BASE_PATH}/../AWS/ssh_key/ysmt_testnet_prod_server_ap_northeast_seoul.pem"
-SERVER_ADDRESS="explorer-api.yosemitex.com"
+RUN_PLAY_APP_SERVERSIDE_SCRIPT="${PLAY_BASE_PATH}/deploy/dev_run_block_explorer_backend_serverside.sh"
+SERVER_SSH_KEY_FILE="${PLAY_BASE_PATH}/../AWS/ssh_key/ysmt_testnet_dev_server_ap_northeast_seoul.pem"
+#SERVER_ADDRESS="ec2-13-124-23-23.ap-northeast-2.compute.amazonaws.com"
+SERVER_ADDRESS="testnet-sentinel-explorer-api.yosemitelabs.org"
 SERVER_USER_HOST="ubuntu@${SERVER_ADDRESS}"
-PLAY_APP_SERVER_TYPE="${red}[${PLAY_APP_NAME}]${green}[ProductionServer]${magenta}[${PLAY_APP_SERVER_NAME}]${reset}"
+PLAY_APP_SERVER_TYPE="${red}[${PLAY_APP_NAME}]${green}[DevelopmentServer]${magenta}[${PLAY_APP_SERVER_NAME}]${reset}"
 
-echo "${red}Do you want to ${PLAY_APP_SERVER_TYPE}?${reset}"
+echo "${green}PLAY_BASE_PATH${reset}=${red}$PLAY_BASE_PATH${reset}"
+echo "${green}PLAY_APP_DIST_FILE${reset}=${red}$PLAY_APP_DIST_FILE${reset}"
+echo "${green}SERVER_ADDRESS${reset}=${red}$SERVER_ADDRESS${reset}"
+echo "${green}PLAY_APP_SERVER_TYPE${reset}=${red}$PLAY_APP_SERVER_TYPE${reset}"
+
+echo "${red}Do you want to deploy ${PLAY_APP_SERVER_TYPE}?${reset}"
 echo "write YES to proceed deploy process"
 read USER_CONFIRM_TO_PROCEED
 if [ "$USER_CONFIRM_TO_PROCEED" != "YES" ]; then

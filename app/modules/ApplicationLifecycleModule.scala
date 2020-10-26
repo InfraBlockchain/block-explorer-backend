@@ -1,6 +1,6 @@
 package modules
 
-import blockchain.YosemiteChainStatus
+import blockchain.InfraBlockchainStatus
 import com.google.inject.AbstractModule
 
 /**
@@ -9,6 +9,6 @@ import com.google.inject.AbstractModule
 class ApplicationLifecycleModule extends AbstractModule {
 
   def configure() = {
-    bind(classOf[YosemiteChainStatus]).asEagerSingleton()
+    bind(classOf[InfraBlockchainStatus]).asEagerSingleton()
   }
 }

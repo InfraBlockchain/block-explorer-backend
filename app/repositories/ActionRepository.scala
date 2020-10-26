@@ -186,7 +186,7 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
             6
          ],
          [
-            "yosemite",
+            "infrasys",
             599
          ]
       ],
@@ -202,7 +202,7 @@ class ActionRepository @Inject()(implicit ec: ExecutionContext, reactiveMongoApi
             "permission":"active"
          },
          {
-            "actor":"yosemite",
+            "actor":"infrasys",
             "permission":"active"
          }
       ],

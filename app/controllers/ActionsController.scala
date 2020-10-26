@@ -1,6 +1,6 @@
 package controllers
 
-import blockchain.YosemiteChainStatus
+import blockchain.InfraBlockchainStatus
 import javax.inject.Inject
 import io.swagger.annotations._
 import models.{Action, ActionRaw, ActionRawList}
@@ -18,7 +18,7 @@ import scala.concurrent.Future
 @Api(value = "/actions")
 class ActionsController @Inject()(cc: ControllerComponents,
                                   actionRepo: ActionRepository,
-                                  yosemiteChainStatus: YosemiteChainStatus) extends AbstractController(cc) {
+                                  infraBlockchainStatus: InfraBlockchainStatus) extends AbstractController(cc) {
 
   @ApiOperation(
     value = "Get a action data by action-id",
@@ -78,7 +78,7 @@ class ActionsController @Inject()(cc: ControllerComponents,
                           @ApiParam(value = "action receiver sequence number to start fetching actions (exclusive for reverse search, inclusive for forward search) (default : -1 : next sequence number of the last(recent) actions)") start: Long,
                           @ApiParam(value = "offset to the end sequence number to fetch actions (default : -50)") offset: Int) = Action.async {
     actionRepo.getReceivedActionsByAccount(account, start, offset).map { actions =>
-      Ok(Json.obj("lastIrrBlkNum" -> yosemiteChainStatus.getLastIrreversibleBlockNum(),
+      Ok(Json.obj("lastIrrBlkNum" -> infraBlockchainStatus.getLastIrreversibleBlockNum(),
         "actions" -> Json.toJson(actions)))
     }
   }
@@ -92,7 +92,7 @@ class ActionsController @Inject()(cc: ControllerComponents,
                                   @ApiParam(value = "action receiver sequence number to start fetching actions (exclusive for reverse search, inclusive for forward search) (default : -1 : next sequence number of the last(recent) actions)") start: Long,
                                   @ApiParam(value = "offset to the end sequence number to fetch actions (default : -50)") offset: Int) = Action.async {
     actionRepo.getReceivedActionsByAccount(account, start, offset).map { actions =>
-      Ok(Json.obj("lastIrrBlkNum" -> yosemiteChainStatus.getLastIrreversibleBlockNum(),
+      Ok(Json.obj("lastIrrBlkNum" -> infraBlockchainStatus.getLastIrreversibleBlockNum(),
         "actions" -> Json.toJson(actions)))
     }
   }
@@ -106,7 +106,7 @@ class ActionsController @Inject()(cc: ControllerComponents,
                               @ApiParam(value = "sent-action global sequence number to start fetching actions (exclusive for reverse search, inclusive for forward search) (default : -1 : next index number of the last(recent) actions)") start: Long,
                               @ApiParam(value = "offset item count to fetch actions (offset < 0 : reverse search, offset > 0 : forward search, default : -50)") offset: Int) = Action.async {
     actionRepo.getSentActionsByAccount(account, start, offset).map { actions =>
-      Ok(Json.obj("lastIrrBlkNum" -> yosemiteChainStatus.getLastIrreversibleBlockNum(),
+      Ok(Json.obj("lastIrrBlkNum" -> infraBlockchainStatus.getLastIrreversibleBlockNum(),
         "actions" -> Json.toJson(actions)))
     }
   }

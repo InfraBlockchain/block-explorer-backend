@@ -1,4 +1,4 @@
-name := "yosemite-explorer-backend"
+name := "block-explorer-backend"
 
 version := "1.0.5"
 

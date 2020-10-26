@@ -14,10 +14,10 @@ import scala.concurrent.duration._
   * Created by bezalel on 13/09/2018.
   */
 @Singleton
-class YosemiteChainStatus @Inject() (conf: Configuration, actorSystem: ActorSystem, ws: WSClient) {
+class InfraBlockchainStatus @Inject()(conf: Configuration, actorSystem: ActorSystem, ws: WSClient) {
 
-  private val YOSEMITE_NODE_CHAIN_API_URL : String = conf.getOptional[String]("yosemite.node.chainapi.url").getOrElse("http://localhost:8888")
-  private val YOSEMITE_NODE_GET_INFO_API_ENDPOINT = YOSEMITE_NODE_CHAIN_API_URL + "/v1/chain/get_info"
+  private val INFRABLOCKCHAIN_NODE_CHAIN_API_URL : String = conf.getOptional[String]("infrablockchain.node.chainapi.url").getOrElse("http://localhost:8888")
+  private val INFRABLOCKCHAIN_NODE_GET_INFO_API_ENDPOINT = INFRABLOCKCHAIN_NODE_CHAIN_API_URL + "/v1/chain/get_info"
 
   ///////////////////////////////////////////////////////////
   // Chain Status Data
@@ -49,7 +49,7 @@ class YosemiteChainStatus @Inject() (conf: Configuration, actorSystem: ActorSyst
     interval = 2.seconds
   ) {
 
-    ws.url(YOSEMITE_NODE_GET_INFO_API_ENDPOINT)
+    ws.url(INFRABLOCKCHAIN_NODE_GET_INFO_API_ENDPOINT)
       .withRequestTimeout(5.seconds)
       .get()
       .map { response =>
@@ -68,7 +68,7 @@ class YosemiteChainStatus @Inject() (conf: Configuration, actorSystem: ActorSyst
         "virtual_block_net_limit":1048576000,
         "block_cpu_limit":199900,
         "block_net_limit":1048576,
-        "server_version_string":"yosemite_eos_v1.2.4_merge-21-g1ce80f6-dirty",
+        "server_version_string":"infrablockchain_v1.2.4_merge-21-g1ce80f6-dirty",
         "native_token_symbol":"4,DKRW"
       }
       */
