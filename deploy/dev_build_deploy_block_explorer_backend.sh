@@ -8,7 +8,7 @@ PLAY_APP_SERVER_NAME="testnet-explorer-backend-server"
 BASEDIR=$(dirname "$0")
 
 PLAY_APP_NAME="block-explorer-backend"
-PLAY_APP_VERSION="1.0-SNAPSHOT"
+PLAY_APP_VERSION="1.1.0"
 
 red=`tput setaf 1`
 green=`tput setaf 2`
